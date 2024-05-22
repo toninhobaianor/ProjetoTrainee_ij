@@ -17,40 +17,52 @@ class UserService{
    }
 
    async update(busca: string,novoAtributo: string,op: number){
-    if(op == 1){
-      const result = await prisma.user.update({
-        where: {
-          email: busca,
-        },
-        data: {
-          name: novoAtributo,
-        },
-      });
-      return result;
+    const condicao = await prisma.user.findUnique({
+      where: { email: busca },
+    });
+    try{
+      if(condicao != null){
+        if(op == 1){
+          const result = await prisma.user.update({
+            where: {
+              email: busca,
+            },
+            data: {
+              name: novoAtributo,
+            },
+          });
+          return result;
+        }
+        else if(op == 2){
+          const result = await prisma.user.update({
+            where: {
+              email: busca,
+            },
+            data: {
+              photo: novoAtributo,
+            },
+          });
+          return result;
+        }
+        else{
+          const result = await prisma.user.update({
+            where: {
+              email: busca,
+            },
+            data: {
+              senha: novoAtributo,
+            },
+          });
+          return result;
+        }
+      }
+      else{
+        throw new Error('O email passado não existe!');
+      }
     }
-    else if(op == 2){
-      const result = await prisma.user.update({
-        where: {
-          email: busca,
-        },
-        data: {
-          photo: novoAtributo,
-        },
-      });
-      return result;
+    catch(error){
+      console.log(error)
     }
-    else{
-      const result = await prisma.user.update({
-        where: {
-          email: busca,
-        },
-        data: {
-          senha: novoAtributo,
-        },
-      });
-      return result;
-    }
-    
   }
 }
 
