@@ -27,8 +27,8 @@ model Music {
   name    String
   genre   String
   album   String
-  author  Author @relation(fields: [authorId], references: [id])
-  authorId Int
+  author  Author @relation(fields: [autorId], references: [id])
+  autorId Int
 }
 
 model Author {
