@@ -18,14 +18,37 @@ async function main(){
   //const user = await UserService.update(email,"senhanova1",3);
   //console.log(user);
 
-  const music = await MusicService.create({
-    album: "music",
-    authorId: 1,
-    genre: "music",
-    id: 3,
-    name: "music",
-  });
-  console.log(music);
+//----------------------------------------------Testes Musica --------------------------------------------------------------
+  // ok
+  //const readAll = await MusicService.readAll();
+  //console.log(readAll);
+
+  // ok
+  //const readId = await MusicService.readById(6);
+  //console.log(readId);
+
+  // ok
+  //const readName = await MusicService.readByName("Boate Azul");
+  //console.log(readName);
+  
+  //
+  //const naoExiste = await MusicService.readByName("Boate Verde");
+  //console.log(naoExiste);
+
+  // ok
+  //const readAlbum = await MusicService.readByAlbum("X");
+  //console.log(readAlbum);
+
+  //
+  //const readAuthor = await MusicService.readByAuthorId(2);
+  //console.log(readAuthor);
+
+  //
+  //const readGenre = await MusicService.readByGenre("A");
+  //console.log(readGenre);
+
+//------------------------------------------------------------------------------------------------------------
+
 }
 
 main();
