@@ -2,7 +2,8 @@ import prisma from "../../../../config/prismaClient";
 import {Music} from "@prisma/client";
 
 class MusicService{
-    async create(body: Music){
+    // CREATE
+    async createMusic(body: Music){
         const result = await prisma.music.create({
             data:{
                 album: body.album,
@@ -17,6 +18,7 @@ class MusicService{
         return result;
     }
 
+    // READ
     async readAll(){
         try{
             const result = await prisma.music.findMany({
@@ -125,6 +127,54 @@ class MusicService{
             }
         }catch(error){
             console.log(error)
+        }
+    }
+
+    // UPDATE
+    async updateMusic(id: number, body: Music){
+        try{
+            const music = await this.readById(id);
+
+            if(music){
+                const newMusic = await prisma.music.update({
+                    data:{
+                        album: body.album,
+                        id: body.id,
+                        genre: body.genre,
+                        name: body.name,
+                        authorId: body.authorId,
+                    }, 
+                    where:{
+                        id
+                    }
+                });
+
+                return newMusic;
+            }else{
+                throw new Error("Sua atualização não funcionou.");
+            }
+
+        }catch(error){
+            console.log(error);
+        }
+    }
+
+    // DELETE
+    async deleteMusic(wantedId: number){
+        try{
+            const music = await this.readById(wantedId);
+
+            if(music){
+                await prisma.music.delete({
+                    where:{
+                        id: wantedId,
+                    }
+                })
+            }else{
+                throw new Error("Não foi possível deletar a música.")
+            }
+        }catch(error){
+            console.log(error);
         }
     }
 
