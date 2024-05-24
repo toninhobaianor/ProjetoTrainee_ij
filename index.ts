@@ -15,10 +15,12 @@ async function main(){
   console.log(user);*/
 
   const email = "tonin1@gmail.com";
-  const user = await UserService.update(email,"senhanova1",3);
+  const user = await UserService.updateUser(email,"senhanova1",3);
 
-  const user1 = await UserService.read();
-  const user2 = await UserService.delete(email);
+  const user1 = await UserService.readUser();
+  const user2 = await UserService.deleteUser(email);
+  const name = "tonin";
+  const user3 = await UserService.readbyName(name);
   console.log(user);
   console.log(user1);
   console.log(user2);
