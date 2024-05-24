@@ -1,5 +1,7 @@
+import { Author } from '@prisma/client';
 import UserService from "./src/domains/User/service/Userservice"
 import MusicService from "./src/domains/Music/service/MusicService"
+import AuthorService from "./src/domains/Author/service/AuthorService"
 
 async function main(){
   /*const body = {
@@ -13,6 +15,15 @@ async function main(){
 
   const user = await UserService.create(body);
   console.log(user);*/
+
+  const email = "tonin1@gmail.com";
+  const user = await UserService.update(email,"senhanova1",3);
+
+  const user1 = await UserService.read();
+  const user2 = await UserService.delete(email);
+  console.log(user);
+  console.log(user1);
+  console.log(user2);
 
   //const email = "tonin1@gmail.com";
   //const user = await UserService.update(email,"senhanova1",3);
@@ -77,6 +88,77 @@ async function main(){
   //await MusicService.deleteMusic(6);
 
 //------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------Testes Artista --------------------------------------------------------------
+/*
+const body = {
+  id: 0,
+  Author: "Gusttavo Lima",
+  photo: null,
+  StreamCount: 1000000,
+}
+
+const Artist = await AuthorService.createArtist(body);
+console.log(Artist); 
+//{ id: 3, Author: 'Gusttavo Lima', StreamCount: 1000000, photo: null } 
+//ok
+
+const readAll = await AuthorService.readAll();
+console.log(readAll);
+//  { id: 3, Author: 'Gusttavo Lima', StreamCount: 1000000, photo: null },
+//  { id: 1, Author: '', StreamCount: 0, photo: null },
+//  { id: 2, Author: '', StreamCount: 0, photo: null }
+
+//ok
+
+const readId = await AuthorService.ReadByID(3);
+console.log(readId);
+const readId2 = await AuthorService.ReadByID(4);
+console.log(readId2);
+//{ id: 3, Author: 'Gusttavo Lima', StreamCount: 1000000, photo: null }
+//Error: Sua pesquisa não gerou resultados. O ID: '4' não está na nossa base de dados.
+//ok
+
+const newMusic = {
+  id: 1, // precia de um id mesmo que não seja o verdadeiro
+  album: "Gusttavo Lima e Você",
+  authorId: 3,
+  genre: "Sertanejo",
+  name: "Tchê Tchê Rere",
+}
+await MusicService.createMusic(newMusic);
+
+const readAuthorMusic = await AuthorService.ReadByMusic("Tchê Tchê Rere");
+console.log(readAuthorMusic);
+//{ id: 3, Author: 'Gusttavo Lima', StreamCount: 1000000, photo: null }
+//ok
+
+
+const readAuthorIDMusic = await AuthorService.ReadByIDMusic(7);
+console.log(readAuthorIDMusic);
+//{ id: 3, Author: 'Gusttavo Lima', StreamCount: 1000000, photo: null }
+//ok
+
+const updateArtist = {
+  id: 1, 
+  Author: "MILIONÁRIO E JOSE RICO",
+  photo: null,
+  StreamCount: 70000000,
+}
+await AuthorService.updateArtist(1, updateArtist);
+// {
+// id: 1,
+//  Author: 'MILIONÁRIO E JOSE RICO',
+//  StreamCount: 70000000,
+//  photo: null
+// }
+//ok 
+
+*/
+
+//await AuthorService.deleteArtist(2);
+//ok
 
 }
 

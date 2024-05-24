@@ -24,11 +24,11 @@ model User {
 }
 
 model Music {
-  id      Int    @id @default(autoincrement())
-  name    String
-  genre   String
-  album   String
-  author  Author @relation(fields: [authorId], references: [id])
+  id       Int    @id @default(autoincrement())
+  name     String
+  genre    String
+  album    String
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId Int
   users UserMusic[]
 }
@@ -41,6 +41,9 @@ model UserMusic{
 }
 
 model Author {
-  id      Int     @id @default(autoincrement())
-  musicas Music[]
+  id          Int     @id @default(autoincrement())
+  Author      String  
+  StreamCount Int     @default(0)
+  photo       String?
+  musics      Music[]
 }

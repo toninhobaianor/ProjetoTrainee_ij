@@ -7,7 +7,7 @@ class UserService{
       where: { email: body.email },
     });
     try{
-      if(condicao != null){
+      if(condicao == null){
          const user = await prisma.user.create({
            data: {
              name: body.name,
@@ -20,7 +20,7 @@ class UserService{
          return user;
       }
       else{
-        throw new Error("Não foi possivel realizar o cadastro pois o email ja existe");
+        throw new Error("Não foi possivel realizar o cadastro pois o email já existe");
       }
      }
     catch(error){
@@ -34,38 +34,42 @@ class UserService{
     });
     try{
       if(condicao != null){
-        if(op == 1){
-          const user = await prisma.user.update({
-            where: {
-              email: busca,
-            },
-            data: {
-              name: novoAtributo,
-            },
-          });
-          return user;
-        }
-        else if(op == 2){
-          const user = await prisma.user.update({
-            where: {
-              email: busca,
-            },
-            data: {
-              photo: novoAtributo,
-            },
-          });
-          return user;
-        }
-        else{
-          const user = await prisma.user.update({
-            where: {
-              email: busca,
-            },
-            data: {
-              senha: novoAtributo,
-            },
-          });
-          return user;
+        switch(op){
+          case 1:
+            const user = await prisma.user.update({
+              where: {
+                email: busca,
+              },
+              data: {
+                name: novoAtributo,
+              },
+            });
+            return user;
+            break;
+          case 2:
+            const user1 = await prisma.user.update({
+              where: {
+                email: busca,
+              },
+              data: {
+                photo: novoAtributo,
+              },
+            });
+            return user1;
+            break;
+          case 3:
+            const user2 = await prisma.user.update({
+              where: {
+                email: busca,
+              },
+              data: {
+                senha: novoAtributo,
+              },
+            });
+            return user2;
+            break;
+          default:
+            throw new Error("Não existe esta opção");
         }
       }
       else{
@@ -76,6 +80,44 @@ class UserService{
       console.log(error)
     }
   }
+
+  async read(){
+    const user = await prisma.user.findMany();
+    try{
+      if(user.length == 0){
+        throw new Error('A lista de usuarios esta vazia');
+      }
+      else{
+        return user;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async delete(proc: string){
+    const condicao = await prisma.user.findUnique({
+        where: { email: proc },
+      });
+    try{
+      if(condicao != null){
+        const result = await prisma.user.delete({
+          where: {
+            email: proc,
+          },
+        });
+        return result;
+      }
+      else{
+        throw new Error('O email informado para deletar não existe!');
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
 }
 
 export default new UserService();
