@@ -82,13 +82,13 @@ class UserService{
   }
 
   async read(){
-    const result = await prisma.user.findMany();
+    const user = await prisma.user.findMany();
     try{
-      if(result.length == 0){
-        throw new Error('O banco de dados esta vazio');
+      if(user.length == 0){
+        throw new Error('A lista de usuarios esta vazia');
       }
       else{
-        return result;
+        return user;
       }
     }
     catch(error){
@@ -110,7 +110,7 @@ class UserService{
         return result;
       }
       else{
-        throw new Error('O email informado não existe!');
+        throw new Error('O email informado para deletar não existe!');
       }
     }
     catch(error){
