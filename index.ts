@@ -16,6 +16,15 @@ async function main(){
   const user = await UserService.create(body);
   console.log(user);*/
 
+  const email = "tonin1@gmail.com";
+  const user = await UserService.update(email,"senhanova1",3);
+
+  const user1 = await UserService.read();
+  const user2 = await UserService.delete(email);
+  console.log(user);
+  console.log(user1);
+  console.log(user2);
+
   //const email = "tonin1@gmail.com";
   //const user = await UserService.update(email,"senhanova1",3);
   //console.log(user);
@@ -79,6 +88,7 @@ async function main(){
   //await MusicService.deleteMusic(6);
 
 //------------------------------------------------------------------------------------------------------------
+
 
 //----------------------------------------------Testes Artista --------------------------------------------------------------
 /*
@@ -149,11 +159,6 @@ await AuthorService.updateArtist(1, updateArtist);
 
 //await AuthorService.deleteArtist(2);
 //ok
-
-
-
-
-
 
 }
 
