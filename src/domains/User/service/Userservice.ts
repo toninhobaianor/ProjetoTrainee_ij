@@ -71,7 +71,6 @@ class UserService{
           default:
             throw new Error("Não existe esta opção");
         }
-        
       }
       else{
         throw new Error('Não foi possivel realizar a atualização pois email passado não existe!');
