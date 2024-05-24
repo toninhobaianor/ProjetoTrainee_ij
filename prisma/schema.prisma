@@ -38,6 +38,8 @@ model UserMusic{
   userId Int @unique
   music Music @relation(fields: [musicId], references: [id])
   musicId Int @unique
+
+  @@id([userId, musicId])
 }
 
 model Author {
