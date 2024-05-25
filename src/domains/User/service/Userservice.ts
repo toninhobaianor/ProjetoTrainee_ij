@@ -28,7 +28,7 @@ class UserService{
     }
   }
 
-   async updateUser(busca: string,novoAtributo: string,op: number){
+  async updateUser(busca: string,novoAtributo: string,op: number){
     const condicao = await prisma.user.findUnique({
       where: { email: busca },
     });
@@ -106,6 +106,40 @@ class UserService{
       }
       else{
         return wanteds;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async readbyEmail(wantedEmail:string){
+    const wanted = await prisma.user.findUnique({
+      where: { email: wantedEmail },
+    });
+    try{
+      if(wanted == null){
+        throw new Error('Não existe este email na nossa base de dados');
+      }
+      else{
+        return wanted;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async readbyIdUser(wantedId:number){
+    const wanted = await prisma.user.findUnique({
+      where: { id: wantedId },
+    });
+    try{
+      if(wanted == null){
+        throw new Error('Não existe nenhum Usuario com este Id na nossa base de dados');
+      }
+      else{
+        return wanted;
       }
     }
     catch(error){
