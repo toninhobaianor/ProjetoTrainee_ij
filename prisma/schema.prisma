@@ -20,7 +20,7 @@ model User {
   photo          String?
   senha          String
   tem_privilegio String
-  musics UserMusic[]
+  musics Music[] @relation("userMusic")
 }
 
 model Music {
@@ -30,16 +30,7 @@ model Music {
   album    String
   author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId Int
-  users UserMusic[]
-}
-
-model UserMusic{
-  user User  @relation(fields: [userId], references: [id])
-  userId Int @unique
-  music Music @relation(fields: [musicId], references: [id])
-  musicId Int @unique
-
-  @@id([userId, musicId])
+  users User[] @relation("userMusic")
 }
 
 model Author {
