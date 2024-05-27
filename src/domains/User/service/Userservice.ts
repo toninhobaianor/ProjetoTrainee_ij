@@ -96,6 +96,24 @@ class UserService{
     }
   }
 
+  async readById(wantedId: number){
+    try{
+      const result = await prisma.user.findUnique({
+          where:{
+              id: Number(wantedId)
+          }
+      });
+
+      if(result){
+          return result;
+      }else{
+          throw new Error("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
+      }
+    }catch(error){
+        console.log(error)
+    }
+  }
+
   async delete(proc: string){
     const condicao = await prisma.user.findUnique({
         where: { email: proc },
