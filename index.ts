@@ -14,7 +14,7 @@ async function main(){
   const user = await UserService.create(body);
   console.log(user);*/
 
-  const email = "tonin1@gmail.com";
+  /*const email = "tonin1@gmail.com";
   const user = await UserService.updateUser(email,"senhanova1",3);
   console.log(user);
 
@@ -37,7 +37,7 @@ async function main(){
 
   //const email = "tonin1@gmail.com";
   //const user = await UserService.update(email,"senhanova1",3);
-  //console.log(user);
+  //console.log(user);*/
 
 //----------------------------------------------Testes Musica --------------------------------------------------------------
   
