@@ -179,11 +179,9 @@ await AuthorService.updateArtist(1, updateArtist);
 
 //----------------------------------------------Testes UserMusic------------------------------------------------
   
-  // ok, pode ter um tratamento de erro melhor
-  
-  const user1 = await UserService.readById(3);
-  const music1 = await MusicService.readById(2);
-
+  // ok
+  //const user1 = await UserService.readbyIdUser(1);
+  //const music1 = await MusicService.readById(2);
 /*
   if (user1 && music1) {
     await UserMusicService.createUserMusic(music1, user1);
@@ -191,35 +189,14 @@ await AuthorService.updateArtist(1, updateArtist);
     console.error("Error");
   }
 */
-
-  // ok
-  //const readUM = await UserMusicService.readAll();
-  //console.log(readUM);  
-
-  // ok
+  //ok
   /*
-  const user2 = await UserService.create({
-    id: 0,
-    name: "allan",
-    email: "allan12@gmail.com",
-    photo: null,
-    senha: "confia",
-    tem_privilegio: "admin",
-  });
-  const music2 = await MusicService.readById(12)
-  if (user2 && music2) {
-    await UserMusicService.updateUserMusicByMusicId(14, music2, user2);
-  } else {
-    console.error("Error");
-  }
-  */
-  
-  //
   if (user1 && music1) {
     await UserMusicService.deleteUserMusic(music1, user1);
   } else {
     console.error("Error");
   }
+  */
   
 }
 
