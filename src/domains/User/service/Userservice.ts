@@ -2,7 +2,7 @@ import prisma from "../../../../config/prismaClient";
 import {User} from "@prisma/client";
 
 class UserService{
-  async create(body: User){
+  async createUser(body: User){
     const condicao = await prisma.user.findUnique({
       where: { email: body.email },
     });
@@ -28,7 +28,7 @@ class UserService{
     }
   }
 
-   async update(busca: string,novoAtributo: string,op: number){
+  async updateUser(busca: string,novoAtributo: string,op: number){
     const condicao = await prisma.user.findUnique({
       where: { email: busca },
     });
@@ -81,7 +81,7 @@ class UserService{
     }
   }
 
-  async read(){
+  async readUser(){
     const user = await prisma.user.findMany();
     try{
       if(user.length == 0){
@@ -96,7 +96,58 @@ class UserService{
     }
   }
 
-  async delete(proc: string){
+  async readbyName(wantedName:string){
+    const wanteds = await prisma.user.findMany({
+      where: { name: wantedName },
+    });
+    try{
+      if(wanteds.length == 0){
+        throw new Error('Não existe ninguem com este nome na nossa base de dados');
+      }
+      else{
+        return wanteds;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async readbyEmail(wantedEmail:string){
+    const wanted = await prisma.user.findUnique({
+      where: { email: wantedEmail },
+    });
+    try{
+      if(wanted == null){
+        throw new Error('Não existe este email na nossa base de dados');
+      }
+      else{
+        return wanted;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async readbyIdUser(wantedId:number){
+    const wanted = await prisma.user.findUnique({
+      where: { id: wantedId },
+    });
+    try{
+      if(wanted == null){
+        throw new Error('Não existe nenhum Usuario com este Id na nossa base de dados');
+      }
+      else{
+        return wanted;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  async deleteUser(proc: string){
     const condicao = await prisma.user.findUnique({
         where: { email: proc },
       });
