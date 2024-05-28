@@ -179,55 +179,25 @@ await AuthorService.updateArtist(1, updateArtist);
 
 //----------------------------------------------Testes UserMusic------------------------------------------------
   
-  // ok, pode ter um tratamento de erro melhor
-  /*
-  const user1 = await UserService.create({
-    id: 0,
-    name: "antonio",
-    email: "tonin11200@gmail.com.br",
-    photo: null,
-    senha: "confia",
-    tem_privilegio: "admin",
-  });
-  const music1 = await MusicService.createMusic({
-    id: 4, 
-    album: "album generico",
-    authorId: 1,
-    genre: "genero generico",
-    name: "nova musica generica",
-  });
-
+  // ok
+  //const user1 = await UserService.readbyIdUser(1);
+  //const music1 = await MusicService.readById(2);
+/*
   if (user1 && music1) {
-    const userMusicCreate = await UserMusicService.createUserMusic(music1, user1);
+    await UserMusicService.createUserMusic(music1, user1);
   } else {
     console.error("Error");
   }
-  */
-
-  // ok
-  //const readUM = await UserMusicService.readAll();
-  //console.log(readUM);  
-
-  // ok
+*/
+  //ok
   /*
-  const user2 = await UserService.create({
-    id: 0,
-    name: "allan",
-    email: "allan12@gmail.com",
-    photo: null,
-    senha: "confia",
-    tem_privilegio: "admin",
-  });
-  const music2 = await MusicService.readById(12)
-  if (user2 && music2) {
-    await UserMusicService.updateUserMusicByMusicId(14, music2, user2);
+  if (user1 && music1) {
+    await UserMusicService.deleteUserMusic(music1, user1);
   } else {
     console.error("Error");
   }
   */
   
-  //
-  //await UserMusicService.deleteUserMusicByUserId(8)
 }
 
 main();
