@@ -1,6 +1,7 @@
 import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { Express } from "express";
+import MusicRouter from "../src/domains/Music/controllers/index";
 
 dotenv.config();
 
@@ -16,5 +17,5 @@ app.use(express.json());
 app.use(express.urlencoded({
 	extended: true,
 }));
-
-// colcar aqui as rotas
+// users
+app.use("/api/musics", MusicRouter);
