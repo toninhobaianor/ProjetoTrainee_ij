@@ -20,7 +20,7 @@ class UserService{
 				return user;
 			}
 			else{
-				throw new Error("Não foi possivel realizar o cadastro pois o email já existe");
+				throw new Error("Não foi possivel realizar o cadastro pois o email já existe.");
 			}
 		}
 		catch(error){
@@ -86,7 +86,7 @@ class UserService{
 		const user = await prisma.user.findMany();
 		try{
 			if(user.length == 0){
-				throw new Error("A lista de usuarios esta vazia");
+				throw new Error("A lista de usuarios esta vazia.");
 			}
 			else{
 				return user;
@@ -163,7 +163,7 @@ class UserService{
 				return result;
 			}
 			else{
-				throw new Error("O email informado para deletar não existe!");
+				throw new Error("O email informado para deletar não existe.");
 			}
 		}
 		catch(error){
