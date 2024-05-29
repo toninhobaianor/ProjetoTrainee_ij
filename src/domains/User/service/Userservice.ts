@@ -20,7 +20,7 @@ class UserService{
 				return user;
 			}
 			else{
-				throw new Error("Não foi possivel realizar o cadastro pois o email já existe");
+				throw new Error("Não foi possivel realizar o cadastro pois o email já existe.");
 			}
 		}
 		catch(error){
@@ -28,24 +28,51 @@ class UserService{
 		}
 	}
 
-	async updateUser(email: string, body: User){
+	async updateEmailUser(email: string){
 		try{
 			const user = await this.readbyEmail(email);
 
 			if(user){
-				const newMusic = await prisma.user.update({
+				const newUser = await prisma.user.update({
 					data:{
-						name: body.name,
-						photo: body.photo,
-						senha: body.senha,
-						tem_privilegio: body.tem_privilegio
+						name: user.name,
+						photo:user.photo,
+						senha: user.senha,
+						tem_privilegio: user.tem_privilegio
 					}, 
 					where:{
 						email: email,
 					}
 				});
 
-				return newMusic;
+				return newUser;
+			}else{
+				throw new Error("Sua atualização não funcionou.");
+			}
+
+		}catch(error){
+			console.log(error);
+		}
+	}
+
+  async updateNameUser(name: string,email: string){
+		try{
+      const user = await this.readbyEmail(email);
+
+			if(user){
+				const newUser = await prisma.user.updateMany({
+					data:{
+						email: user.email,
+						photo: user.photo,
+						senha: user.senha,
+						tem_privilegio: user.tem_privilegio
+					}, 
+					where:{
+						name: name,
+					}
+				});
+
+				return newUser;
 			}else{
 				throw new Error("Sua atualização não funcionou.");
 			}
@@ -59,7 +86,7 @@ class UserService{
 		const user = await prisma.user.findMany();
 		try{
 			if(user.length == 0){
-				throw new Error("A lista de usuarios esta vazia");
+				throw new Error("A lista de usuarios esta vazia.");
 			}
 			else{
 				return user;
@@ -122,23 +149,6 @@ class UserService{
 		}
 	}
 
-	async readbyIdUser(wantedId:number){
-		const wanted = await prisma.user.findUnique({
-			where: { id: wantedId },
-		});
-		try{
-			if(wanted == null){
-				throw new Error("Não existe nenhum Usuario com este Id na nossa base de dados");
-			}
-			else{
-				return wanted;
-			}
-		}
-		catch(error){
-			console.log(error);
-		}
-	}
-
 	async deleteUser(proc: string){
 		const condicao = await prisma.user.findUnique({
 			where: { email: proc },
@@ -153,7 +163,7 @@ class UserService{
 				return result;
 			}
 			else{
-				throw new Error("O email informado para deletar não existe!");
+				throw new Error("O email informado para deletar não existe.");
 			}
 		}
 		catch(error){
