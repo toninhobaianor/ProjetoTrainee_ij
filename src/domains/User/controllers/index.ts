@@ -21,4 +21,24 @@ router.get("/:id",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
+router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
+	try {
+		const user = await Userservice.readByEmail(Number(req.params.id));
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+})
+
+router.get("/:name", async (req: Request, res: Response, next: NextFunction) =>{
+	try {
+		const music = await Userservice.readbyName(req.params.name);
+		res.json(music);
+	} catch (error) {
+		next(error);
+	}
+});
+
+
+
 export default router;
