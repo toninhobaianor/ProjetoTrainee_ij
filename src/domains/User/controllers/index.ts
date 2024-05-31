@@ -30,14 +30,7 @@ router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
-router.get("/:name", async (req: Request, res: Response, next: NextFunction) =>{
-	try {
-		const music = await Userservice.readbyName(req.params.name);
-		res.json(music);
-	} catch (error) {
-		next(error);
-	}
-});
+
 
 
 
