@@ -21,6 +21,7 @@ router.get("/:id",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
+/*
 router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readByEmail(Number(req.params.id));
@@ -28,7 +29,7 @@ router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
 	} catch (error) {
 		next(error);
 	}
-})
+})*/
 
 
 
