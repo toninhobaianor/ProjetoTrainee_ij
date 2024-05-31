@@ -28,33 +28,6 @@ class UserService{
 		}
 	}
 
-	async updateEmailUser(email: string){
-		try{
-			const user = await this.readbyEmail(email);
-
-			if(user){
-				const newUser = await prisma.user.update({
-					data:{
-						name: user.name,
-						photo:user.photo,
-						senha: user.senha,
-						tem_privilegio: user.tem_privilegio
-					}, 
-					where:{
-						email: email,
-					}
-				});
-
-				return newUser;
-			}else{
-				throw new Error("Sua atualização não funcionou.");
-			}
-
-		}catch(error){
-			console.log(error);
-		}
-	}
-
   async updateNameUser(name: string,email: string){
 		try{
       const user = await this.readbyEmail(email);

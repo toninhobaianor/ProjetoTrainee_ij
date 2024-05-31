@@ -1,8 +1,21 @@
+import { User } from "@prisma/client";
 import { Router, Request, Response, NextFunction } from "express";
 import Userservice from "../service/Userservice";
 
 const router = Router();
 
+//Create
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const body: User = req.body;
+		const user = await Userservice.createUser(body);
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+});
+
+//Reads
 router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const users = await Userservice.readUser();
@@ -21,18 +34,44 @@ router.get("/:id",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
-/*
-router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/:name",async (req:Request, res:Response, next:NextFunction) => {
 	try {
-		const user = await Userservice.readByEmail(Number(req.params.id));
+		const user = await Userservice.readbyName(req.params.name);
 		res.json(user);
 	} catch (error) {
 		next(error);
 	}
-})*/
+})
+
+router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
+	try {
+		const user = await Userservice.readbyEmail(req.params.email);
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+})
+
+// Update
+router.put("/update/:email:name", async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const user = await Userservice.updateNameUser(req.params.email,req.params.name);
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+});
 
 
-
+//Delete
+router.delete("/delete/:email", async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const user = await Userservice.deleteUser(req.params.email);
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+});
 
 
 export default router;
