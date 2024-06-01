@@ -5,23 +5,21 @@ import UserMusicService from "../service/UserMusicService";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user: User = req.body;
         const music: Music = req.body;
-		const usermusic = await UserMusicService.createUserMusic(music,user);
+		const usermusic = await UserMusicService.createUserMusic(music,Number(req.params.id));
 		res.json(usermusic);
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.delete("/delete", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/:id", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-        const user: User = req.body;
         const music: Music = req.body;
-		const usermusic = await UserMusicService.deleteUserMusic(user,music);
-		res.json(user);
+		const usermusic = await UserMusicService.deleteUserMusic(music,Number(req.params.id));
+		res.json(usermusic);
 	} catch (error) {
 		next(error);
 	}
