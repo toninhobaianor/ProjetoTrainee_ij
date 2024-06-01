@@ -26,3 +26,5 @@ router.delete("/delete", async (req: Request, res: Response, next: NextFunction)
 		next(error);
 	}
 });
+
+export default router;

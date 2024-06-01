@@ -53,9 +53,10 @@ router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) 
 })
 
 // Update
-router.put("/update/:email:name", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = await Userservice.updateNameUser(req.params.email,req.params.name);
+		const body: User = req.body;
+		const user = await Userservice.updateNameUser(req.params.email,body);
 		res.json(user);
 	} catch (error) {
 		next(error);
