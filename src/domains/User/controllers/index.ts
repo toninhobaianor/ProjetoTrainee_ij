@@ -25,7 +25,7 @@ router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
-router.get("/:id",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/id/:id",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readById(Number(req.params.id));
 		res.json(user);
@@ -34,7 +34,7 @@ router.get("/:id",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
-router.get("/:name",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/name/:name",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyName(req.params.name);
 		res.json(user);
@@ -43,7 +43,7 @@ router.get("/:name",async (req:Request, res:Response, next:NextFunction) => {
 	}
 })
 
-router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyEmail(req.params.email);
 		res.json(user);
@@ -53,9 +53,10 @@ router.get("/:email",async (req:Request, res:Response, next:NextFunction) => {
 })
 
 // Update
-router.put("/update/:email:name", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = await Userservice.updateNameUser(req.params.email,req.params.name);
+		const body: User = req.body;
+		const user = await Userservice.updateNameUser(req.params.email,body);
 		res.json(user);
 	} catch (error) {
 		next(error);

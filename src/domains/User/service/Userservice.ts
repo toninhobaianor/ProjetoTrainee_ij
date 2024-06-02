@@ -28,20 +28,20 @@ class UserService{
 		}
 	}
 
-  async updateNameUser(name: string,email: string){
+  async updateNameUser(email: string,body: User){
 		try{
       const user = await this.readbyEmail(email);
 
 			if(user){
 				const newUser = await prisma.user.updateMany({
 					data:{
-						email: user.email,
-						photo: user.photo,
-						senha: user.senha,
-						tem_privilegio: user.tem_privilegio
+						name: body.name,
+						photo: body.photo,
+						senha: body.senha,
+						tem_privilegio: body.tem_privilegio
 					}, 
 					where:{
-						name: name,
+						email: email,
 					}
 				});
 
