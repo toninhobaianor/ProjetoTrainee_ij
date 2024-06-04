@@ -1,22 +1,25 @@
 import prisma from "../../../../config/prismaClient";
-import {Music} from "@prisma/client";
-import {User} from "@prisma/client";
 import Userservice from "../../User/service/Userservice";
 
 class UserMusicService{
 	// CREATE
-	async createUserMusic(music: Music, idUser: number){
+	async createUserMusic(music: number, idUser: number){
 		try{
 			const user = await Userservice.readById(idUser);
-			if (music && user){
+			if (user){
 				const result = await prisma.user.update({
 					data:{
 						musics:{
-							connect: music
+							connect: {
+								id: music,
+							}
 						}
 					},
 					where:{
-						id: user.id,
+						id: idUser,
+					},
+					include:{
+						musics: true
 					}
         
 				});
@@ -32,18 +35,23 @@ class UserMusicService{
 	}
 
 	// DELETE
-	async deleteUserMusic(music: Music, idUser: number){
+	async deleteUserMusic(idMusic: number, idUser: number){
 		try{
 			const user = await Userservice.readById(idUser);
-			if(music && user){
+			if(user){
 				await prisma.user.update({
 					data:{
 						musics:{
-							disconnect: music
+							disconnect: {
+								id: idMusic
+							}
 						}
 					},
 					where:{
 						id: user.id,
+					},
+					include:{
+						musics: true,
 					}
 				});
 			}else {
