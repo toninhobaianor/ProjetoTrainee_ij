@@ -23,7 +23,7 @@ router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	} catch (error) {
 		next(error);
 	}
-})
+});
 
 router.get("/id/:id",async (req:Request, res:Response, next:NextFunction) => {
 	try {
@@ -32,7 +32,7 @@ router.get("/id/:id",async (req:Request, res:Response, next:NextFunction) => {
 	} catch (error) {
 		next(error);
 	}
-})
+});
 
 router.get("/name/:name",async (req:Request, res:Response, next:NextFunction) => {
 	try {
@@ -41,7 +41,7 @@ router.get("/name/:name",async (req:Request, res:Response, next:NextFunction) =>
 	} catch (error) {
 		next(error);
 	}
-})
+});
 
 router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) => {
 	try {
@@ -50,7 +50,7 @@ router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) 
 	} catch (error) {
 		next(error);
 	}
-})
+});
 
 // Update
 router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {

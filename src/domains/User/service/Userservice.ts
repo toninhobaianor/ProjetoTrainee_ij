@@ -3,10 +3,17 @@ import {User} from "@prisma/client";
 
 class UserService{
 	async createUser(body: User){
-		const condicao = await prisma.user.findUnique({
-			where: { email: body.email },
-		});
+		if (!body.email) {
+			throw new Error("O campo 'email' é obrigatório.");
+		}
+		
 		try{
+			const condicao = await prisma.user.findUnique({
+				where:{
+					email: body.email
+				}
+			});
+			
 			if(condicao == null){
 				const user = await prisma.user.create({
 					data: {
@@ -28,9 +35,9 @@ class UserService{
 		}
 	}
 
-  async updateNameUser(email: string,body: User){
+	async updateNameUser(email: string,body: User){
 		try{
-      const user = await this.readbyEmail(email);
+			const user = await this.readbyEmail(email);
 
 			if(user){
 				const newUser = await prisma.user.updateMany({

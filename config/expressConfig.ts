@@ -1,4 +1,3 @@
-import { Author } from '@prisma/client';
 import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, { Express } from "express";
