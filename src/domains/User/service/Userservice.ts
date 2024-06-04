@@ -35,9 +35,63 @@ class UserService{
 		}
 	}
 
-	async updateNameUser(email: string,body: User){
+	async updateNameUser(name: string,body: User){
 		try{
-			const user = await this.readbyEmail(email);
+			const user = await this.readbyEmail(body.email);
+
+			if(user){
+				const newUser = await prisma.user.updateMany({
+					data:{
+						name: name,
+						photo: body.photo,
+						senha: body.senha,
+						tem_privilegio: body.tem_privilegio
+					}, 
+					where:{
+						email: body.email,
+					}
+				});
+
+				return newUser;
+			}else{
+				throw new Error("Sua atualização não funcionou.");
+			}
+
+		}catch(error){
+			console.log(error);
+		}
+	}
+
+	async updatePasswordUser(senha: string,body: User){
+		try{
+			const user = await this.readbyEmail(body.email);
+
+			if(user){
+				const newUser = await prisma.user.updateMany({
+					data:{
+						name: body.name,
+						photo: body.photo,
+						senha: senha,
+						tem_privilegio: body.tem_privilegio
+					}, 
+					where:{
+						email: body.email,
+					}
+				});
+
+				return newUser;
+			}else{
+				throw new Error("Sua atualização não funcionou.");
+			}
+
+		}catch(error){
+			console.log(error);
+		}
+	}
+
+	async updateEmailUser(email: string,body: User){
+		try{
+			const user = await this.readbyEmail(body.email);
 
 			if(user){
 				const newUser = await prisma.user.updateMany({
