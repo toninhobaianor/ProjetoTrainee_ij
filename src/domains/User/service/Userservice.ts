@@ -1,10 +1,11 @@
 import prisma from "../../../../config/prismaClient";
-import {User} from "@prisma/client";
-
+import { User } from "@prisma/client";
+import { InvalidParamError } from"../../../../errors/InvalidParamError"
+import { QueryError } from"../../../../errors/QueryError"
 class UserService{
 	async createUser(body: User){
 		if (!body.email) {
-			throw new Error("O campo 'email' é obrigatório.");
+			throw new InvalidParamError("O campo 'email' é obrigatório.");
 		}
 		
 		try{
@@ -27,7 +28,7 @@ class UserService{
 				return user;
 			}
 			else{
-				throw new Error("Não foi possivel realizar o cadastro pois o email já existe.");
+				throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
 			}
 		}
 		catch(error){
