@@ -7,7 +7,10 @@ import statusCodes from "../../utils/constants/statusCodes";
 import { User } from "@prisma/client";
 import { sign, verify } from "jsonwebtoken";
 
+function destroyJWT(){
 
+}
+ 
 function generateJWT(user: User, res: Response){
     const body = {
         id: user.id,
@@ -74,4 +77,24 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         next(error);
     }
     
+}
+
+export async function logout(req: Request, res: Response, next: NextFunction){
+    try {
+        //precisamos destruir o jwt;
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function notLoggedIn(req: Request, res: Response, next: NextFunction){
+    try {
+        // precisamos saber se o JWT foi gerado;
+    } catch (error) {
+        next(error);
+    }
+}
+
+export function CheckRole(){
+
 }
