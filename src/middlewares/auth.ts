@@ -8,6 +8,7 @@ import { User } from "@prisma/client";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 
 
+
 function generateJWT(user: User, res: Response){
 	const body = {
 		id: user.id,
@@ -103,8 +104,6 @@ export async function notLoggedIn(req: Request, res: Response, next: NextFunctio
 export async function logout(req: Request, res: Response, next: NextFunction) {
 	try {
 
-		await verifyJWT(req, res, next);
-
 		if(req.user){
 			res.clearCookie("jwt",{
 				httpOnly: true,
@@ -122,3 +121,21 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
+
+
+/*export async function checkRole(requiredRole: string) {
+	return async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			
+
+			if (req.user.tem_privilegio !== requiredRole) {
+				throw new PermissionError("Você não tem permissão para acessar este recurso.");
+			}
+
+			next(); 
+
+		} catch (error) {
+			next(error);
+		}
+	};
+}*/

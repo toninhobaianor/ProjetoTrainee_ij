@@ -1,11 +1,14 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { Router, Request, Response, NextFunction } from "express";
 import AuthorService from "../service/AuthorService";
 import {Author} from "@prisma/client";
+import { login, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+//import { userRoles } from "../../../../utils/constants/userRoles";
 
 
 const router = Router();
 
-//router.post('/login', notLoggedIn, login);
+router.post("/login", notLoggedIn, login);
 
 
 //GET (READ) ALL
@@ -20,12 +23,12 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 
 //GET (READ) by id
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", verifyJWT, async (req, res, next) => {
 	try {
-		const Author = await AuthorService.ReadByID(Number(req.params.id));
-		res.json(Author);
+	  const Author = await AuthorService.ReadByID(Number(req.params.id));
+	  res.json(Author);
 	} catch (error) {
-		next(error);
+	  next(error);
 	}
 });
 
