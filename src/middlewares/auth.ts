@@ -7,10 +7,7 @@ import statusCodes from "../../utils/constants/statusCodes";
 import { User } from "@prisma/client";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 
-function destroyJWT(){
 
-}
- 
 function generateJWT(user: User, res: Response){
 	const body = {
 		id: user.id,
@@ -71,7 +68,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 		}
 		const match = compare(req.body.senha,user.senha);
 		if(!match){
-			throw new PermissionError("Ema a incorretos!");
+			throw new PermissionError("Email e/ou senha incorretos!");
 		}
 		generateJWT(user, res);
 
@@ -82,22 +79,46 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     
 }
 
-export async function logout(req: Request, res: Response, next: NextFunction){
-    try {
-        //precisamos destruir o jwt;
-    } catch (error) {
-        next(error);
-    }
+export async function notLoggedIn(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		await verifyJWT(req, res, next);
+		
+		if(req.user){
+			throw new PermissionError("O usuário está logado");
+		}
+
+	}catch(error){
+		if (error instanceof TokenError) {
+			next();
+		}else{
+			next(error);
+		}
+        
+        
+	}
 }
 
-export async function notLoggedIn(req: Request, res: Response, next: NextFunction){
-    try {
-        // precisamos saber se o JWT foi gerado;
-    } catch (error) {
-        next(error);
-    }
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		await verifyJWT(req, res, next);
+
+		if(req.user){
+			res.clearCookie("jwt",{
+				httpOnly: true,
+				secure: process.env.NODE_ENV !== "development"
+
+			});
+			res.status(statusCodes.SUCCESS).json("Logout realizado");
+		}else{
+			throw new TokenError("Você precisa estar logado para realizar essa ação");
+		}
+        
+
+	}catch(error){
+		next(error);
+	}
 }
 
-export function CheckRole(){
-
-}
