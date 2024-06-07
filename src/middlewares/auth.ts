@@ -72,7 +72,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
         generateJWT(user, res);
 
-        res.status(statusCodes.SUCCESS).json("login Realizado com sucesso!")
+        res.status(statusCodes.SUCCESS).json("login Realizado com sucesso!");
     } catch (error) {
         next(error);
     }
@@ -81,7 +81,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function logout(req: Request, res: Response, next: NextFunction){
     try {
-        //precisamos destruir o jwt;
+        //precisamos guardar o cokkie para o proximo login ?;
+        //
+        //redirecionar para a pagina de login
+        res.status(statusCodes.SUCCESS).json("logout Realizado com sucesso!");
     } catch (error) {
         next(error);
     }
@@ -89,7 +92,9 @@ export async function logout(req: Request, res: Response, next: NextFunction){
 
 export async function notLoggedIn(req: Request, res: Response, next: NextFunction){
     try {
-        // precisamos saber se o JWT foi gerado;
+        if(req.user == null){
+            throw new TokenError("Você precisa estar logado para realizar essa ação");
+        }
     } catch (error) {
         next(error);
     }

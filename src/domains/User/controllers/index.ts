@@ -4,11 +4,23 @@ import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth
 import Userservice from "../service/Userservice";
 
 const router = Router();
+router.post("/users/create",async (req: Request, res: Response, next: NextFunction) =>{
+	try {
+		const body: User = req.body;
+		const user = await Userservice.createCont(body);
+		res.json(user);
+	} catch (error) {
+		next(error);
+	}
+})
 
-router.post("/login",notLoggedIn,login);
-router.get("/logout",verifyJWT,logout);
+router.post("/users/login",notLoggedIn,login);
+
+router.post("/users/logout",verifyJWT,logout);
+
+router.get("/users/account",verifyJWT)
 //Create
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/users/admin/create", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
 		const user = await Userservice.createUser(body);
@@ -19,7 +31,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 //Reads
-router.get("/",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/users",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const users = await Userservice.readUser();
 		res.json(users);
@@ -28,7 +40,7 @@ router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	}
 });
 
-router.get("/id/:id",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
+router.get("/users/:id",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readById(Number(req.params.id));
 		res.json(user);
@@ -56,7 +68,7 @@ router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) 
 });
 
 // Update
-router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/users/update/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
 		const user = await Userservice.updateNameUser(req.params.email,body);
@@ -68,7 +80,7 @@ router.put("/update/:email", async (req: Request, res: Response, next: NextFunct
 
 
 //Delete
-router.delete("/delete/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/users/delete/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const user = await Userservice.deleteUser(req.params.email);
 		res.json(user);
