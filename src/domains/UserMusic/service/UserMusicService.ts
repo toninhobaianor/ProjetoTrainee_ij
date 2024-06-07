@@ -1,49 +1,106 @@
 import prisma from "../../../../config/prismaClient";
 import Userservice from "../../User/service/Userservice";
+import { InvalidParamError } from "../../../../errors/InvalidParamError";
+import { QueryError } from "../../../../errors/QueryError";
 
 class UserMusicService{
 	// CREATE
-	async createUserMusic(music: number, idUser: number){
+	// falta autenticação e status
+	async createUserMusic(musicId: number, userId: number){
 		try{
-			const user = await Userservice.readById(idUser);
-			if (user){
+			if(isNaN(musicId)){
+				throw new InvalidParamError("O parâmetro 'musicId' deve ser um número válido.");
+			}
+			if(isNaN(userId)){
+				throw new InvalidParamError("O parâmetro 'userId' deve ser um número válido.");
+			}
+			const user = await Userservice.readById(userId);
+			if(user){
 				const result = await prisma.user.update({
 					data:{
 						musics:{
 							connect: {
-								id: music,
+								id: musicId,
 							}
 						}
 					},
 					where:{
-						id: idUser,
+						id: userId,
 					},
 					include:{
-						musics: true
+						musics:{
+							where:{
+								id: musicId,
+							}
+						}
 					}
         
 				});
 
 				return result;
             
-			}else {
-				throw new Error("Erro ao criar relação entre música e usuário");
+			}else{
+				throw new QueryError("Usuário com ID '" + userId + "' não encontrado.");
 			}
 		}catch(error){
-			console.log(error);
+			if (error instanceof InvalidParamError || error instanceof QueryError){
+				console.log(error.message);
+			}else{
+				console.log("Ocorreu um erro inesperado:", error);
+			}
+		}
+	}
+
+	// READ
+	// falta autenticação e status
+	async readUserMusics(userId: number){
+		try{
+			if(isNaN(userId)){
+				throw new InvalidParamError("O parâmetro 'userId' deve ser um número válido.");
+			}
+			const user = await Userservice.readById(userId);
+			if(user){
+				const result = await prisma.user.findMany({
+					where:{
+						id: userId,
+					},
+					include:{
+						musics: true
+					},
+
+				});
+
+				return result;
+            
+			}else{
+				throw new QueryError("Usuário com ID '" + userId + "' não encontrado.");
+			}
+		}catch(error){
+			if (error instanceof InvalidParamError || error instanceof QueryError){
+				console.log(error.message);
+			}else{
+				console.log("Ocorreu um erro inesperado:", error);
+			}
 		}
 	}
 
 	// DELETE
-	async deleteUserMusic(idMusic: number, idUser: number){
+	// falta autenticação e status
+	async deleteUserMusic(musicId: number, userId: number){
 		try{
-			const user = await Userservice.readById(idUser);
+			if(isNaN(musicId)){
+				throw new InvalidParamError("O parâmetro 'musicId' deve ser um número válido.");
+			}
+			if(isNaN(userId)){
+				throw new InvalidParamError("O parâmetro 'userId' deve ser um número válido.");
+			}
+			const user = await Userservice.readById(userId);
 			if(user){
 				await prisma.user.update({
 					data:{
 						musics:{
 							disconnect: {
-								id: idMusic
+								id: musicId
 							}
 						}
 					},
@@ -55,10 +112,14 @@ class UserMusicService{
 					}
 				});
 			}else {
-				throw new Error("Erro ao deletar relação entre música e usuário");
+				throw new QueryError("Usuário com ID '" + userId + "' não encontrado.");
 			}
 		}catch(error){
-			console.log(error);
+			if (error instanceof InvalidParamError || error instanceof QueryError){
+				console.log(error.message);
+			}else{
+				console.log("Ocorreu um erro inesperado:", error);
+			}
 		}
 	}
 
