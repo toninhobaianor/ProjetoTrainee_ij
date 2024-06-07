@@ -24,7 +24,7 @@ class MusicService{
 	}
 
 	// READ
-	// falta autenticação e status
+	// falta autenticação
 	async readAll(){
 		try{
 			const result = await prisma.music.findMany({
@@ -48,7 +48,7 @@ class MusicService{
         
 	}
 
-	// falta autenticação e status
+	// falta autenticação
 	async readById(id: number){
 		try{
 			if(isNaN(id)){
