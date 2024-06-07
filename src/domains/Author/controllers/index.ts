@@ -1,11 +1,14 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { Router, Request, Response, NextFunction } from "express";
 import AuthorService from "../service/AuthorService";
 import {Author} from "@prisma/client";
+import { login, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+//import { userRoles } from "../../../../utils/constants/userRoles";
 
 
 const router = Router();
 
-
+router.post("/login", notLoggedIn, login);
 
 
 //GET (READ) ALL
@@ -20,12 +23,12 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 
 //GET (READ) by id
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", verifyJWT, async (req, res, next) => {
 	try {
-		const Author = await AuthorService.ReadByID(Number(req.params.id));
-		res.json(Author);
+	  const Author = await AuthorService.ReadByID(Number(req.params.id));
+	  res.json(Author);
 	} catch (error) {
-		next(error);
+	  next(error);
 	}
 });
 
@@ -44,7 +47,7 @@ router.get("/musicid/:id", async (req: Request, res: Response, next: NextFunctio
 
 router.get("/musicname/:name", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const Author = await AuthorService.ReadByMusic(req.params.name)
+		const Author = await AuthorService.ReadByMusic(req.params.name);
 		res.json(Author);
 	} catch (error) {
 		next(error);
@@ -54,7 +57,7 @@ router.get("/musicname/:name", async (req: Request, res: Response, next: NextFun
 //Criando (POST) um Artista
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-        const body: Author = req.body;
+		const body: Author = req.body;
 		const author = await AuthorService.createArtist(body);
 		res.json(author);
 	} catch (error) {
@@ -66,7 +69,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
 router.put("/:id", async(req: Request, res: Response, next: NextFunction) => {
 	try {
-		const author = await AuthorService.updateArtist(Number(req.params.id), req.body)
+		const author = await AuthorService.updateArtist(Number(req.params.id), req.body);
 		res.json(author);
 	} catch (error) {
 		next(error);
