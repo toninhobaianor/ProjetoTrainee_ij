@@ -67,9 +67,9 @@ router.get("/album/:album", async (req: Request, res: Response, next: NextFuncti
 });
 
 // read by author id (get)
-router.get("/authorId/:authorId", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/artist/:id", async (req: Request, res: Response, next: NextFunction) =>{
 	try {
-		const music = await MusicService.readByAuthorId(Number(req.params.authorId));
+		const music = await MusicService.readByAuthorId(Number(req.params.id));
 		res.json(music);
 	} catch (error) {
 		next(error);

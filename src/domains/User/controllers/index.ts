@@ -1,11 +1,12 @@
 import { User } from "@prisma/client";
 import { Router, Request, Response, NextFunction } from "express";
-import { login, verifyJWT } from "../../../middlewares/auth";
+import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
 import Userservice from "../service/Userservice";
 
 const router = Router();
 
-router.post("/login",login);
+router.post("/login",notLoggedIn,login);
+router.get("/logout",verifyJWT,logout);
 //Create
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -27,7 +28,7 @@ router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	}
 });
 
-router.get("/id/:id",verifyJWT(),async (req:Request, res:Response, next:NextFunction) => {
+router.get("/id/:id",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readById(Number(req.params.id));
 		res.json(user);

@@ -3,17 +3,14 @@ import { User } from "@prisma/client";
 import { InvalidParamError } from"../../../../errors/InvalidParamError";
 import { QueryError } from"../../../../errors/QueryError";
 import bcrypt from "bcrypt";
+
 class UserService{
-
-	async encryptPassword(password:string){
+	async encryptPassaword(senha: string){
 		const saltRounds = 10;
-		const encrypted = await bcrypt.hash(password, saltRounds);
-		return encrypted;
+		const cripitografado = await bcrypt.hash(senha,saltRounds);
+		return cripitografado;
 	}
-
 	async createUser(body: User){
-		const encrypted = await this.encryptPassword(body.senha);
-
 		if (!body.email) {
 			throw new InvalidParamError("O campo 'email' é obrigatório.");
 		}
@@ -26,12 +23,13 @@ class UserService{
 			});
 			
 			if(condicao == null){
+				const cripitografia = await this.encryptPassaword(body.senha);
 				const user = await prisma.user.create({
 					data: {
 						name: body.name,
 						email: body.email,
 						photo: body.photo,
-						senha: encrypted,
+						senha: cripitografia,
 						tem_privilegio: body.tem_privilegio
 					}
 				});
@@ -45,8 +43,6 @@ class UserService{
 			console.log(error);
 		}
 	}
-
-	
 
 	async updateNameUser(name: string,body: User){
 		try{
@@ -67,7 +63,7 @@ class UserService{
 
 				return newUser;
 			}else{
-				throw new Error("Sua atualização não funcionou.");
+				throw new QueryError("Sua atualização não funcionou.");
 			}
 
 		}catch(error){
@@ -80,11 +76,12 @@ class UserService{
 			const user = await this.readbyEmail(body.email);
 
 			if(user){
+				const cripitografia = await this.encryptPassaword(senha);
 				const newUser = await prisma.user.updateMany({
 					data:{
 						name: body.name,
 						photo: body.photo,
-						senha: senha,
+						senha: cripitografia,
 						tem_privilegio: body.tem_privilegio
 					}, 
 					where:{
@@ -94,7 +91,7 @@ class UserService{
 
 				return newUser;
 			}else{
-				throw new Error("Sua atualização não funcionou.");
+				throw new QueryError("Sua atualização não funcionou.");
 			}
 
 		}catch(error){
@@ -121,7 +118,7 @@ class UserService{
 
 				return newUser;
 			}else{
-				throw new Error("Sua atualização não funcionou.");
+				throw new QueryError("Sua atualização não funcionou.");
 			}
 
 		}catch(error){
@@ -155,7 +152,7 @@ class UserService{
 			if(result){
 				return result;
 			}else{
-				throw new Error("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
+				throw new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
 			}
 		}catch(error){
 			console.log(error);
@@ -168,7 +165,7 @@ class UserService{
 		});
 		try{
 			if(wanteds.length == 0){
-				throw new Error("Não existe ninguem com este nome na nossa base de dados");
+				throw new InvalidParamError("Não existe ninguem com este nome na nossa base de dados");
 			}
 			else{
 				return wanteds;
@@ -185,7 +182,7 @@ class UserService{
 		});
 		try{
 			if(wanted == null){
-				throw new Error("Não existe este email na nossa base de dados");
+				throw new InvalidParamError("Não existe este email na nossa base de dados");
 			}
 			else{
 				return wanted;
@@ -210,7 +207,7 @@ class UserService{
 				return result;
 			}
 			else{
-				throw new Error("O email informado para deletar não existe.");
+				throw new InvalidParamError("O email informado não existe.");
 			}
 		}
 		catch(error){
