@@ -1,9 +1,19 @@
 import prisma from "../../../../config/prismaClient";
 import { User } from "@prisma/client";
-import { InvalidParamError } from"../../../../errors/InvalidParamError"
-import { QueryError } from"../../../../errors/QueryError"
+import { InvalidParamError } from"../../../../errors/InvalidParamError";
+import { QueryError } from"../../../../errors/QueryError";
+import bcrypt from "bcrypt";
 class UserService{
+
+	async encryptPassword(password:string){
+		const saltRounds = 10;
+		const encrypted = await bcrypt.hash(password, saltRounds);
+		return encrypted;
+	}
+
 	async createUser(body: User){
+		const encrypted = await this.encryptPassword(body.senha);
+
 		if (!body.email) {
 			throw new InvalidParamError("O campo 'email' é obrigatório.");
 		}
@@ -21,7 +31,7 @@ class UserService{
 						name: body.name,
 						email: body.email,
 						photo: body.photo,
-						senha: body.senha,
+						senha: encrypted,
 						tem_privilegio: body.tem_privilegio
 					}
 				});
@@ -35,6 +45,8 @@ class UserService{
 			console.log(error);
 		}
 	}
+
+	
 
 	async updateNameUser(name: string,body: User){
 		try{
