@@ -178,7 +178,7 @@ class UserService{
 		try{
 			const result = await prisma.user.findUnique({
 				where:{
-					id: Number(wantedId)
+					id: Number(wantedId),
 				}
 			});
 
