@@ -2,14 +2,14 @@
 import { Router, Request, Response, NextFunction } from "express";
 import AuthorService from "../service/AuthorService";
 import {Author} from "@prisma/client";
-import { login, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
 //import { userRoles } from "../../../../utils/constants/userRoles";
 
 
 const router = Router();
 
 router.post("/login", notLoggedIn, login);
-
+router.post("/logout", logout);
 
 //GET (READ) ALL
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
