@@ -121,19 +121,23 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
 
 
 
-/*export async function checkRole(requiredRole: string) {
+export function checkRole(requiredRole: Array<string>) {
 	return async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			
-
-			if (req.user.tem_privilegio !== requiredRole) {
-				throw new PermissionError("Você não tem permissão para acessar este recurso.");
-			}
-
-			next(); 
-
-		} catch (error) {
-			next(error);
+	  try {
+		if(requiredRole.length == 1){
+		  const token = cookieExtractor(req);
+		  const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
+		  req.user = decoded.user;
+  
+		  if (req.user.tem_privilegio !== requiredRole[0]) {
+			throw new PermissionError("Você não tem permissão para acessar este recurso.");
+		  }
+		  next();
 		}
+		next();
+  
+	  } catch (error) {
+		next(error);
+	  }
 	};
-}*/
+  }
