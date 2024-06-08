@@ -2,11 +2,12 @@ import { Router, Request, Response, NextFunction } from "express";
 import MusicService from "../service/MusicService";
 import {Music} from "@prisma/client";
 import { statusCodes } from "../../../../utils/constants/statusCodes";
+import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
 
 const router = Router();
 
 //create a music (post)
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const body: Music = req.body;
 
@@ -22,7 +23,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // read all (get)
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const music = await MusicService.readAll();
 		if(!music) {
@@ -38,7 +39,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // read by id (get)
-router.get("/id/:id", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/id/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {
@@ -57,7 +58,7 @@ router.get("/id/:id", async (req: Request, res: Response, next: NextFunction) =>
 });
 
 // read by name (get)
-router.get("/name/:name", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/name/:name", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
 	try {
 		const music = await MusicService.readByName(req.params.name);
 		if (music) {
@@ -72,7 +73,7 @@ router.get("/name/:name", async (req: Request, res: Response, next: NextFunction
 
 
 // read by gender (get)
-router.get("/genre/:genre", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/genre/:genre", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByGenre(req.params.genre);
 		if (music) {
@@ -86,7 +87,7 @@ router.get("/genre/:genre", async (req: Request, res: Response, next: NextFuncti
 });
 
 // read by album (get)
-router.get("/album/:album", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/album/:album", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByAlbum(req.params.album);
 		if (music) {
@@ -100,7 +101,7 @@ router.get("/album/:album", async (req: Request, res: Response, next: NextFuncti
 });
 
 // read by author id (get)
-router.get("/artist/:id", async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/artist/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const authorId = Number(req.params.id);
 		if (isNaN(authorId)) {
@@ -118,7 +119,7 @@ router.get("/artist/:id", async (req: Request, res: Response, next: NextFunction
 });
 
 // update music (put)
-router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {
@@ -142,7 +143,7 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
 
 
 // delete music (delete)
-router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {

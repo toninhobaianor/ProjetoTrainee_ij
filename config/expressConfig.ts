@@ -5,7 +5,7 @@ import MusicRouter from "../src/domains/Music/controllers/index";
 import UserRouter from"../src/domains/User/controllers/index";
 import AuthorRouter from "../src/domains/Author/controllers/index";
 import UserMusicRouter from "../src/domains/UserMusic/controllers/index";
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 
 
 dotenv.config();

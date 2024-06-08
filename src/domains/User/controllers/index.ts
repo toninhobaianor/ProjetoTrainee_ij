@@ -12,15 +12,15 @@ router.post("/users/create",async (req: Request, res: Response, next: NextFuncti
 	} catch (error) {
 		next(error);
 	}
-})
+});
 
-router.post("/users/login",notLoggedIn,login);
+router.post("/login",notLoggedIn,login);
 
-router.post("/users/logout",verifyJWT,logout);
+router.post("/logout",verifyJWT,logout);
 
-router.get("/users/account",verifyJWT)
+router.get("/account",verifyJWT);
 //Create
-router.post("/users/admin/create", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/admin/create", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
 		const user = await Userservice.createUser(body);
@@ -31,7 +31,7 @@ router.post("/users/admin/create", async (req: Request, res: Response, next: Nex
 });
 
 //Reads
-router.get("/users",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/",async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const users = await Userservice.readUser();
 		res.json(users);
@@ -40,7 +40,7 @@ router.get("/users",async (req:Request, res:Response, next:NextFunction) => {
 	}
 });
 
-router.get("/users/:id",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
+router.get("/:id",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readById(Number(req.params.id));
 		res.json(user);
@@ -68,7 +68,7 @@ router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) 
 });
 
 // Update
-router.put("/users/update/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
 		const user = await Userservice.updateNameUser(req.params.email,body);
@@ -80,7 +80,7 @@ router.put("/users/update/:email", async (req: Request, res: Response, next: Nex
 
 
 //Delete
-router.delete("/users/delete/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/:email", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const user = await Userservice.deleteUser(req.params.email);
 		res.json(user);
