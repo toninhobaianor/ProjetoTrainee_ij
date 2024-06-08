@@ -1,7 +1,7 @@
 import prisma from "../../../../config/prismaClient";
 import { User } from "@prisma/client";
-import { InvalidParamError } from"../../../../errors/InvalidParamError"
-import { QueryError } from"../../../../errors/QueryError"
+import { InvalidParamError } from"../../../../errors/InvalidParamError";
+import { QueryError } from"../../../../errors/QueryError";
 import bcrypt from "bcrypt";
 
 class UserService{
@@ -31,6 +31,39 @@ class UserService{
 						photo: body.photo,
 						senha: cripitografia,
 						tem_privilegio: body.tem_privilegio
+					}
+				});
+				return user;
+			}
+			else{
+				throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
+			}
+		}
+		catch(error){
+			console.log(error);
+		}
+	}
+	async createCont(body: User){
+		if (!body.email) {
+			throw new InvalidParamError("O campo 'email' é obrigatório.");
+		}
+		
+		try{
+			const condicao = await prisma.user.findUnique({
+				where:{
+					email: body.email
+				}
+			});
+			
+			if(condicao == null){
+				const cripitografia = await this.encryptPassaword(body.senha);
+				const user = await prisma.user.create({
+					data: {
+						name: body.name,
+						email: body.email,
+						photo: body.photo,
+						senha: cripitografia,
+						tem_privilegio: "user"
 					}
 				});
 				return user;
@@ -193,21 +226,41 @@ class UserService{
 		}
 	}
 
-	async deleteUser(proc: string){
+	async deleteUser(wantedEmail: string){
 		const condicao = await prisma.user.findUnique({
-			where: { email: proc },
+			where: { email: wantedEmail },
 		});
 		try{
 			if(condicao != null){
 				const result = await prisma.user.delete({
 					where: {
-						email: proc,
+						email: wantedEmail,
 					},
 				});
 				return result;
 			}
 			else{
 				throw new InvalidParamError("O email informado não existe.");
+			}
+		}
+		catch(error){
+			console.log(error);
+		}
+	}
+
+	async deleteById(wantedId: number){
+		const user = await this.readById(wantedId);
+		try{
+			if(user != null){
+				const result = await prisma.user.delete({
+					where: {
+						email: user.email,
+					},
+				});
+				return result;
+			}
+			else{
+				throw new InvalidParamError("O id informado não existe.");
 			}
 		}
 		catch(error){
