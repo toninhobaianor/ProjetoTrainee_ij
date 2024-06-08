@@ -83,21 +83,19 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 export async function notLoggedIn(req: Request, res: Response, next: NextFunction) {
 	try {
 
-		await verifyJWT(req, res, next);
-		
-		if(req.user){
+		const token = cookieExtractor(req);
+		if(token){
 			throw new PermissionError("O usuário está logado");
 		}
+		next();
 
 	}catch(error){
-		if (error instanceof TokenError) {
-			next();
-		}else{
-			next(error);
-		}
-        
-        
+		
+		next(error);
 	}
+        
+        
+	
 }
 
 
