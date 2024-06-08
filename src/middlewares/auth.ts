@@ -133,7 +133,8 @@ export function checkRole(requiredRole: Array<string>) {
 			throw new PermissionError("Você não tem permissão para acessar este recurso.");
 		  }
 		  next();
-		} 
+		}
+		next();
   
 	  } catch (error) {
 		next(error);
