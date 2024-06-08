@@ -7,20 +7,32 @@ import { QueryError } from "../../../../errors/QueryError";
 
 class MusicService{
 	// CREATE
-	// falta tratamento de erro e autenticação
+	// autenticação
 	async createMusic(body: Music){
-		const result = await prisma.music.create({
-			data:{
-				album: body.album,
-				genre: body.genre,
-				name: body.name,
-				author: {
-					connect: { id: body.authorId },
+		try {
+			if (!body || !body.name || isNaN(body.authorId) || !body.authorId){
+				throw new InvalidParamError("Parâmetros inválidos fornecidos.");
+			}
+			const result = await prisma.music.create({
+				data:{
+					album: body.album,
+					genre: body.genre,
+					name: body.name,
+					author: {
+						connect: { id: body.authorId },
+					},
 				},
-			},
-
-		});
-		return result;
+	
+			});
+			return result;
+		} catch (error) {
+			if(error instanceof InvalidParamError){
+				console.log(error.message);
+			}else{
+				console.log("Ocorreu um erro inesperado:", error);
+			}
+		}
+		
 	}
 
 	// READ
@@ -184,9 +196,12 @@ class MusicService{
 	}
 
 	// UPDATE
-	// falta tratamento de erro e autenticação
+	// autenticação
 	async updateMusic(id: number, body: Music){
 		try{
+			if(isNaN(id)){
+				throw new InvalidParamError("O parâmetro deve ser um número.");
+			}
 			const music = await this.readById(id);
 
 			if(music){
@@ -204,18 +219,25 @@ class MusicService{
 
 				return newMusic;
 			}else{
-				throw new Error("Sua atualização não funcionou.");
+				throw new QueryError("Música não encontrada.");
 			}
 
 		}catch(error){
-			console.log(error);
+			if (error instanceof InvalidParamError || error instanceof QueryError) {
+				console.log(error.message);
+			} else {
+				console.log("Ocorreu um erro inesperado:", error);
+			}
 		}
 	}
 
 	// DELETE
-	// falta tratamento de erro e autenticação
+	// autenticação
 	async deleteMusic(wantedId: number){
 		try{
+			if(isNaN(wantedId)){
+				throw new InvalidParamError("O parâmetro deve ser um número.");
+			}
 			const music = await this.readById(wantedId);
 
 			if(music){
@@ -225,10 +247,14 @@ class MusicService{
 					}
 				});
 			}else{
-				throw new Error("Não foi possível deletar a música.");
+				throw new QueryError("Música não encontrada.");
 			}
 		}catch(error){
-			console.log(error);
+			if (error instanceof InvalidParamError || error instanceof QueryError) {
+				console.log(error.message);
+			} else {
+				console.log("Ocorreu um erro inesperado:", error);
+			}
 		}
 	}
 

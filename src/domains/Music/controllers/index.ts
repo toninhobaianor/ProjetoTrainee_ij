@@ -60,7 +60,11 @@ router.get("/id/:id", async (req: Request, res: Response, next: NextFunction) =>
 router.get("/name/:name", async (req: Request, res: Response, next: NextFunction) =>{
 	try {
 		const music = await MusicService.readByName(req.params.name);
-		res.json(music);
+		if (music) {
+			res.status(statusCodes.SUCCESS).json(music);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Música não encontrada." });
+		}
 	} catch (error){
 		next(error);
 	}
@@ -71,7 +75,11 @@ router.get("/name/:name", async (req: Request, res: Response, next: NextFunction
 router.get("/genre/:genre", async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByGenre(req.params.genre);
-		res.json(music);
+		if (music) {
+			res.status(statusCodes.SUCCESS).json(music);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Gênero não encontrado." });
+		}
 	}catch (error){
 		next(error);
 	}
@@ -81,7 +89,11 @@ router.get("/genre/:genre", async (req: Request, res: Response, next: NextFuncti
 router.get("/album/:album", async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByAlbum(req.params.album);
-		res.json(music);
+		if (music) {
+			res.status(statusCodes.SUCCESS).json(music);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Álbum não encontrado." });
+		}
 	}catch (error){
 		next(error);
 	}
@@ -90,8 +102,16 @@ router.get("/album/:album", async (req: Request, res: Response, next: NextFuncti
 // read by author id (get)
 router.get("/artist/:id", async (req: Request, res: Response, next: NextFunction) =>{
 	try{
-		const music = await MusicService.readByAuthorId(Number(req.params.id));
-		res.json(music);
+		const authorId = Number(req.params.id);
+		if (isNaN(authorId)) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID inválido fornecido." });
+		}
+		const music = await MusicService.readByAuthorId(authorId);
+		if (music) {
+			res.status(statusCodes.SUCCESS).json(music);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Artista não encontrado." });
+		}
 	}catch (error){
 		next(error);
 	}
@@ -100,9 +120,21 @@ router.get("/artist/:id", async (req: Request, res: Response, next: NextFunction
 // update music (put)
 router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
 	try{
+		const musicId = Number(req.params.id);
+		if (isNaN(musicId)) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID inválido fornecido." });
+		}
 		const body: Music = req.body;
-		const music = await MusicService.updateMusic(Number(req.params.id), body);
-		res.json(music);
+		if (!body || !body.name || !body.authorId) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "Nome da música e ID do autor são obrigatórios." });
+		}
+
+		const music = await MusicService.updateMusic(musicId, body);
+		if (music) {
+			res.status(statusCodes.SUCCESS).json(music);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Música não encontrado." });
+		}
 	}catch (error){
 		next(error);
 	}
@@ -112,8 +144,17 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
 // delete music (delete)
 router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
 	try{
-		const music = await MusicService.deleteMusic(Number(req.params.id));
-		res.json(music);
+		const musicId = Number(req.params.id);
+		if (isNaN(musicId)) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID inválido fornecido." });
+		}
+		const music = await MusicService.deleteMusic(musicId);
+		if (music != null) {
+			res.status(statusCodes.SUCCESS).json(music);
+			res.status(statusCodes.NOT_FOUND).json({ error: "Música não foi deletada." });
+		} else {
+			res.status(statusCodes.SUCCESS).json(music);
+		}
 	}catch (error){
 		next(error);
 	}
