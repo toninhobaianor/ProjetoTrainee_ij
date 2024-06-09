@@ -2,12 +2,12 @@ import { Router, Request, Response, NextFunction } from "express";
 import MusicService from "../service/MusicService";
 import {Music} from "@prisma/client";
 import { statusCodes } from "../../../../utils/constants/statusCodes";
-import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+import { verifyJWT, checkRole } from "../../../middlewares/auth";
 
 const router = Router();
 
 //create a music (post)
-router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const body: Music = req.body;
 
@@ -23,7 +23,7 @@ router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFuncti
 });
 
 // read all (get)
-router.get("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const music = await MusicService.readAll();
 		if(!music) {
@@ -39,7 +39,7 @@ router.get("/", verifyJWT, async (req: Request, res: Response, next: NextFunctio
 });
 
 // read by id (get)
-router.get("/id/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/id/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {
@@ -58,7 +58,7 @@ router.get("/id/:id", verifyJWT, async (req: Request, res: Response, next: NextF
 });
 
 // read by name (get)
-router.get("/name/:name", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/name/:name", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) =>{
 	try {
 		const music = await MusicService.readByName(req.params.name);
 		if (music) {
@@ -73,7 +73,7 @@ router.get("/name/:name", verifyJWT, async (req: Request, res: Response, next: N
 
 
 // read by gender (get)
-router.get("/genre/:genre", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/genre/:genre", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByGenre(req.params.genre);
 		if (music) {
@@ -87,7 +87,7 @@ router.get("/genre/:genre", verifyJWT, async (req: Request, res: Response, next:
 });
 
 // read by album (get)
-router.get("/album/:album", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/album/:album", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const music = await MusicService.readByAlbum(req.params.album);
 		if (music) {
@@ -101,7 +101,7 @@ router.get("/album/:album", verifyJWT, async (req: Request, res: Response, next:
 });
 
 // read by author id (get)
-router.get("/artist/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) =>{
+router.get("/artist/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) =>{
 	try{
 		const authorId = Number(req.params.id);
 		if (isNaN(authorId)) {
@@ -119,7 +119,7 @@ router.get("/artist/:id", verifyJWT, async (req: Request, res: Response, next: N
 });
 
 // update music (put)
-router.put("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {
@@ -143,7 +143,7 @@ router.put("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunc
 
 
 // delete music (delete)
-router.delete("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {

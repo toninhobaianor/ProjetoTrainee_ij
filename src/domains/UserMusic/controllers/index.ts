@@ -1,11 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
 import UserMusicService from "../service/UserMusicService";
 import { statusCodes } from "../../../../utils/constants/statusCodes";
-import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+import { verifyJWT, checkRole } from "../../../middlewares/auth";
 
 const router = Router();
 
-router.post("/listen/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/listen/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { id }: { id: number } = req.body;
 		if (isNaN(id)) {
@@ -26,7 +26,7 @@ router.post("/listen/:id", verifyJWT, async (req: Request, res: Response, next: 
 	}
 });
 
-router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const musicId = Number(req.params.id);
 		if (isNaN(musicId)) {
@@ -43,7 +43,7 @@ router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: N
 	}
 });
 
-router.delete("/unlisten/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/unlisten/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { id }: { id: number } = req.body;
 		if (isNaN(id)) {
