@@ -151,7 +151,7 @@ router.delete("/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Reque
 		}
 		const music = await MusicService.deleteMusic(musicId);
 		if (music != null) {
-			res.status(statusCodes.SUCCESS).json(music);
+			//res.status(statusCodes.SUCCESS).json(music);
 			res.status(statusCodes.NOT_FOUND).json({ error: "Música não foi deletada." });
 		} else {
 			res.status(statusCodes.SUCCESS).json(music);

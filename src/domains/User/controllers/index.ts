@@ -1,9 +1,8 @@
 import { User } from "@prisma/client";
 import { Router, Request, Response, NextFunction } from "express";
 import { statusCodes } from "../../../../utils/constants/statusCodes";
-import { checkRole, login, logout, notLoggedIn, verifyJWT, cookieExtractor } from "../../../middlewares/auth";
+import { checkRole, login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
 import Userservice from "../service/Userservice";
-import { JwtPayload, sign, verify } from "jsonwebtoken";
 
 const router = Router();
 router.post("/users/create",async (req: Request, res: Response, next: NextFunction) =>{
@@ -23,14 +22,11 @@ router.post("/login",notLoggedIn,login);
 
 router.post("/logout",verifyJWT,logout);
 
+/*
 router.get("/account", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		//entender melhor sobre o res.cookie
-		const token = cookieExtractor(req);
-		if(token){
-			const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
-			req.user = decoded.user;
-		}
+		
 		const user = Userservice.readById(req.user.id);
 	} catch (error) {
 		next(error);
@@ -42,8 +38,10 @@ router.put("/account/password", verifyJWT , async (req: Request, res: Response, 
 	try {
 		//entender melhor sobre o res.cookie
 		const body: string = req.body;
+		const token = req.cookies.access_token;
+		console.log(token);
 		const cripitografia = await Userservice.encryptPassaword(body);
-		const user = Userservice.updatePasswordUser(cripitografia,);
+		//const user = Userservice.updatePasswordUser(cripitografia,);
 	} catch (error) {
 		next(error);
 	}
@@ -58,6 +56,8 @@ router.delete("/account/delete", verifyJWT , async (req: Request, res: Response,
 	}
 
 });
+
+*/
 
 //Create
 router.post("/admin/create", verifyJWT ,checkRole(["admin"]), async (req: Request, res: Response, next: NextFunction) => {
@@ -103,30 +103,45 @@ router.get("/:id",verifyJWT,checkRole(["admin"]),async (req:Request, res:Respons
 	}
 });
 
-router.get("/name/:name",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/name/:name",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyName(req.params.name);
-		res.json(user);
+		if (user) {
+			res.status(statusCodes.SUCCESS).json(user);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum usuario com este nome." });
+		}
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.get("/email/:email",async (req:Request, res:Response, next:NextFunction) => {
+router.get("/email/:email",verifyJWT,checkRole(["admin"]),async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyEmail(req.params.email);
-		res.json(user);
+		if (user) {
+			res.status(statusCodes.SUCCESS).json(user);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum usuario com este email." });
+		}
 	} catch (error) {
 		next(error);
 	}
 });
 
 // Update
-router.put("/update/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:email", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
+		if (!body) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "Nenhuma atualização foi passada." });
+		}
 		const user = await Userservice.updateNameUser(req.params.email,body);
-		res.json(user);
+		if (user) {
+			res.status(statusCodes.SUCCESS).json(user);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Nenhum usuario foi encontrado." });
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -142,7 +157,6 @@ router.delete("/delete/:id",verifyJWT ,checkRole(["admin"]), async (req: Request
 		} else {
 			res.status(statusCodes.SUCCESS).json(user);
 		}
-		res.json(user);
 	} catch (error) {
 		next(error);
 	}

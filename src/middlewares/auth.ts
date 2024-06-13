@@ -26,7 +26,7 @@ function generateJWT(user: User, res: Response){
 }
 
 
-export async function cookieExtractor(req: Request) {
+function cookieExtractor(req: Request) {
 	let token = null;
 	if (req.cookies){
 		token = req.cookies["jwt"];
