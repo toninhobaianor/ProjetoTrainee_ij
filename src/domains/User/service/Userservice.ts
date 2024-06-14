@@ -10,6 +10,7 @@ class UserService{
 		const cripitografado = await bcrypt.hash(senha,saltRounds);
 		return cripitografado;
 	}
+	
 	async createUser(body: User){
 		if (!body.email) {
 			throw new InvalidParamError("O campo 'email' é obrigatório.");

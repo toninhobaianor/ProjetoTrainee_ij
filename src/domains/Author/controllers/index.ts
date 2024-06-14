@@ -1,8 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { Router, Request, Response, NextFunction } from "express";
+import { statusCodes } from "../../../../utils/constants/statusCodes";
 import AuthorService from "../service/AuthorService";
 import {Author} from "@prisma/client";
-import { login, logout, notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+import { login, logout, notLoggedIn, verifyJWT, checkRole } from "../../../middlewares/auth";
 //import { userRoles } from "../../../../utils/constants/userRoles";
 
 
@@ -12,10 +13,16 @@ router.post("/login", notLoggedIn, login);
 router.post("/logout", logout);
 
 //GET (READ) ALL
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", verifyJWT ,async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const Author = await AuthorService.readAll();
-		res.json(Author);
+		if(!Author) {
+			res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: "Não temos nenhum autor cadastrado." });
+		}else if(Author.length > 0){
+			res.status(statusCodes.SUCCESS).json(Author);
+		}else{
+			res.status(statusCodes.NO_CONTENT).send(); 
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -23,21 +30,29 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 
 //GET (READ) by id
-router.get("/:id", verifyJWT, async (req, res, next) => {
+router.get("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
-	  const Author = await AuthorService.ReadByID(Number(req.params.id));
-	  res.json(Author);
+		const Author = await AuthorService.ReadByID(Number(req.params.id));
+		if (Author) {
+			res.status(statusCodes.SUCCESS).json(Author);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum autor." });
+		}
 	} catch (error) {
-	  next(error);
+		next(error);
 	}
 });
 
 
 //GET (READ) by music id
-router.get("/musicid/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musicid/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const Author = await AuthorService.ReadByIDMusic(Number(req.params.id));
-		res.json(Author);
+		if (Author) {
+			res.status(statusCodes.SUCCESS).json(Author);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhuma música desse autor." });
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -48,18 +63,25 @@ router.get("/musicid/:id", async (req: Request, res: Response, next: NextFunctio
 router.get("/musicname/:name", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const Author = await AuthorService.ReadByMusic(req.params.name);
-		res.json(Author);
+		if (Author) {
+			res.status(statusCodes.SUCCESS).json(Author);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhuma autor com este nome." });
+		}
 	} catch (error) {
 		next(error);
 	}
 });
 
 //Criando (POST) um Artista
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", verifyJWT, checkRole(["admin"]) , async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: Author = req.body;
+		if (!body || !body.Author) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: " É necessario o Nome do autor." });
+		}
 		const author = await AuthorService.createArtist(body);
-		res.json(author);
+		res.status(statusCodes.CREATED).json(author);
 	} catch (error) {
 		next(error);
 	}
@@ -67,10 +89,18 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
 //Atualizando (PUT) um artista
 
-router.put("/:id", async(req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:id", verifyJWT, checkRole(["admin"]) , async(req: Request, res: Response, next: NextFunction) => {
 	try {
-		const author = await AuthorService.updateArtist(Number(req.params.id), req.body);
-		res.json(author);
+		const body: Author = req.body;
+		if (!body) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "Nenhum autor foi passado." });
+		}
+		const author = await AuthorService.updateArtist(Number(req.params.id), body);
+		if (author) {
+			res.status(statusCodes.SUCCESS).json(author);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Nenhum autor foi encontrado." });
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -78,10 +108,14 @@ router.put("/:id", async(req: Request, res: Response, next: NextFunction) => {
 
 
 // delete (delete) artist 
-router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/:id", verifyJWT, checkRole(["admin"]) ,async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const author = await AuthorService.deleteArtist(Number(req.params.id)); 
-		res.json(author);
+		const author = await AuthorService.deleteArtist(Number(req.params.id));
+		if (author != null) {
+			res.status(statusCodes.NOT_FOUND).json({ error: "O autor não foi deletado." });
+		} else {
+			res.status(statusCodes.SUCCESS).json(author);
+		} 
 	} catch (error) {
 		next(error);
 	}
