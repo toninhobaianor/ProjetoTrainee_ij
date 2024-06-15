@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  api:
+    environment:
+      - BD=${NAME_CONTAINER_DB}
+
+    container_name:  ${NAME_CONTAINER_API}
+    
+    build:
+      context: .
+      dockerfile: api.dockerfile
+    image: ${IMAGE_API}
+
+
+
+
+    ports:
+      - "${PORT_API}:${PORT_API}"
+
+    volumes:
+      - ./src:/app/src
+
+    command: npm run migrate && npm run start
+    
+    depends_on: 
+      - mysql
+
+  mysql:
+    container_name: ${NAME_CONTAINER_DB}
+    
+    image: ${IMAGE_BD}
+
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+    ports:
+      - "${PORT_DB}:${PORT_DB}"
+
+
+    volumes:
+      - my_db:/var/lib/mysql
+
+
+
+networks:
+  base_network:
+    driver: bridge
+
+
+volumes:
+  my_db: 
