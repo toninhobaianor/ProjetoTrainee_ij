@@ -19,12 +19,14 @@ services:
       - "${PORT_API}:${PORT_API}"
 
     volumes:
-      - ./src:/app/src
+      - .:/api
 
-    command: npm run migrate && npm run start
-    
     depends_on: 
       - mysql
+
+    command: npx prisma migrate deploy && npm start
+    
+    
 
   mysql:
     container_name: ${NAME_CONTAINER_DB}
