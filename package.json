@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsnd --rs --respawn --transpile-only --exit-child index.ts"
+    "start": "tsnd --respawn --transpile-only --exit-child=true --rs index.ts",
+    "test": "jest --verbose"
   },
   "keywords": [],
   "author": "",
