@@ -140,23 +140,23 @@ class AuthorService{
 
 	//delete
 	async deleteArtist(id: number ){
-		try{
-			const author = await this.ReadByID(id);
-			console.log(author);
+		//try{
+		const author = await this.ReadByID(id);
+		console.log(author);
 
-			if(author){
-				await prisma.author.delete({
-					where: {
-						id: Number(id),
-					},
-				});
-			}else{
-				throw new Error("Não foi possível deletar o artista.");
-			}
+		if(author){
+			await prisma.author.delete({
+				where: {
+					id: Number(id),
+				},
+			});
+		}else{
+			throw new Error("Não foi possível deletar o artista.");
+		}
 
-		}catch(error){
-			console.log(error);
-		} 
+		//}//catch(error){
+		//console.log(error);
+		//} 
 	}
 
 

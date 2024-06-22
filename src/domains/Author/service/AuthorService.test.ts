@@ -1,14 +1,25 @@
+
 import { prismaMock } from "../../../../config/singleton";
-import { QueryError } from "../../../../errors/QueryError";
+
 import AuthorService from "./AuthorService";
 
 test("tenta deletar usuário inexistente ==> gera erro", async () => {
-	prismaMock.author.findFirst.mockResolvedValue(null);
-
-	await expect(AuthorService.deleteArtist(3)).rejects.toThrow(
-		new QueryError("Esse email não está associado com nenhuma conta.")
+	prismaMock.author.findUnique.mockResolvedValue(null);
+	await expect(AuthorService.deleteArtist(0)).rejects.toThrow(
+		new Error("Não foi possível deletar o artista.")
 	);
 
-	expect(prismaMock.user.findFirst).toHaveBeenCalledWith({ where: { id: 3 } });
-	expect(prismaMock.user.delete).not.toHaveBeenCalled();
+	expect(prismaMock.author.findUnique).toHaveBeenCalledWith({ where: { id: 0 } });
+	expect(prismaMock.author.delete).not.toHaveBeenCalled();
+});
+
+
+test("tenta deletar usuário inexistente ==> deleta usuario", async () => {
+	prismaMock.author.findUnique.mockResolvedValue(null);
+	await expect(AuthorService.deleteArtist(0)).rejects.toThrow(
+		new Error("Não foi possível deletar o artista.")
+	);
+
+	expect(prismaMock.author.findUnique).toHaveBeenCalledWith({ where: { id: 0 } });
+	expect(prismaMock.author.delete).not.toHaveBeenCalled();
 });
