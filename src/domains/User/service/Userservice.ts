@@ -79,104 +79,87 @@ class UserService{
 	}
 
 	async updateNameUser(name: string,body: User){
-		try{
-			const user = await this.readbyEmail(body.email);
-
-			if(user){
-				const newUser = await prisma.user.updateMany({
-					data:{
-						name: name,
-						photo: body.photo,
-						senha: body.senha,
-						tem_privilegio: body.tem_privilegio
-					}, 
-					where:{
-						email: body.email,
-					}
-				});
-
-				return newUser;
-			}else{
-				throw new QueryError("Sua atualização não funcionou.");
-			}
-
-		}catch(error){
-			console.log(error);
+		const user = await this.readbyEmail(body.email);
+		if(user){
+			const newUser = await prisma.user.updateMany({
+				data:{
+					name: name,
+					photo: body.photo,
+					senha: body.senha,
+					tem_privilegio: body.tem_privilegio
+				}, 
+				where:{
+					email: body.email,
+				}
+			});
+			return newUser;
+		}else{
+			throw new QueryError("Sua atualização não funcionou.");
 		}
 	}
 
 	async updatePasswordUser(senha: string,body: User){
-		try{
-			const user = await this.readbyEmail(body.email);
+		const user = await this.readbyEmail(body.email);
 
-			if(user){
-				const cripitografia = await this.encryptPassaword(senha);
-				const newUser = await prisma.user.updateMany({
-					data:{
-						name: body.name,
-						photo: body.photo,
-						senha: cripitografia,
-						tem_privilegio: body.tem_privilegio
-					}, 
-					where:{
-						email: body.email,
-					}
-				});
-
-				return newUser;
-			}else{
-				throw new QueryError("Sua atualização não funcionou.");
-			}
-
-		}catch(error){
-			console.log(error);
+		if(user){
+			const cripitografia = await this.encryptPassaword(senha);
+			const newUser = await prisma.user.updateMany({
+				data:{
+					name: body.name,
+					photo: body.photo,
+					senha: cripitografia,
+					tem_privilegio: body.tem_privilegio
+				}, 
+				where:{
+					email: body.email,
+				}
+			});
+			return newUser;
+		}else{
+			throw new QueryError("Sua atualização não funcionou.");
 		}
 	}
 
 	async updateEmailUser(email: string,body: User){
-		try{
-			const user = await this.readbyEmail(body.email);
+		const user = await this.readbyEmail(body.email);
+		if(user){
+			const newUser = await prisma.user.updateMany({
+				data:{
+					name: body.name,
+					photo: body.photo,
+					senha: body.senha,
+					tem_privilegio: body.tem_privilegio
+				}, 
+				where:{
+					email: email,
+				}
+			});
 
-			if(user){
-				const newUser = await prisma.user.updateMany({
-					data:{
-						name: body.name,
-						photo: body.photo,
-						senha: body.senha,
-						tem_privilegio: body.tem_privilegio
-					}, 
-					where:{
-						email: email,
-					}
-				});
-
-				return newUser;
-			}else{
-				throw new QueryError("Sua atualização não funcionou.");
-			}
-
-		}catch(error){
-			console.log(error);
+			return newUser;
+		}else{
+			throw new QueryError("Sua atualização não funcionou.");
 		}
+
+		
 	}
 
 	async readUser(){
-		const user = await prisma.user.findMany();
-		try{
-			if(user.length == 0){
-				throw new Error("A lista de usuarios esta vazia.");
+
+		const user = await prisma.user.findMany({
+			orderBy: {
+				name: "asc"
 			}
-			else{
-				return user;
-			}
+		});
+
+		if(user && user.length > 0){
+			return user;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new QueryError("A lista de usuarios esta vazia.");
 		}
 	}
 
 	async readById(wantedId: number){
-		try{
 			const result = await prisma.user.findUnique({
 				where:{
 					id: Number(wantedId),
@@ -188,25 +171,17 @@ class UserService{
 			}else{
 				throw new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
 			}
-		}catch(error){
-			console.log(error);
-		}
 	}
 
 	async readbyName(wantedName:string){
 		const wanteds = await prisma.user.findMany({
 			where: { name: wantedName },
 		});
-		try{
-			if(wanteds.length == 0){
-				throw new InvalidParamError("Não existe ninguem com este nome na nossa base de dados");
-			}
-			else{
-				return wanteds;
-			}
+		if(wanteds && wanteds.length > 0){
+			return wanteds;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new InvalidParamError("Não existe ninguem com este nome na nossa base de dados");
 		}
 	}
 
@@ -214,25 +189,19 @@ class UserService{
 		const wanted = await prisma.user.findUnique({
 			where: { email: wantedEmail },
 		});
-		try{
-			if(wanted == null){
-				throw new InvalidParamError("Não existe este email na nossa base de dados");
-			}
-			else{
-				return wanted;
-			}
+
+		if(wanted){
+			return wanted;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new InvalidParamError("Não existe este email na nossa base de dados");
 		}
 	}
 
 	async deleteUser(wantedEmail: string){
-		const condicao = await prisma.user.findUnique({
-			where: { email: wantedEmail },
-		});
+		const condicao = await this.readbyEmail(wantedEmail);
 		try{
-			if(condicao != null){
+			if(condicao){
 				const result = await prisma.user.delete({
 					where: {
 						email: wantedEmail,
