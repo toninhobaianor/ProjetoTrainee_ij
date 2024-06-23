@@ -5,8 +5,11 @@ import {Author} from "@prisma/client";
 class AuthorService{
 
 	//CREATE
-
+	
 	async createArtist(body: Author){
+		if (!body || !body.Author ){
+			throw new Error("Parâmetros inválidos fornecidos.");
+		}
 		const author = await prisma.author.create({
 			data: {
 				Author: body.Author,
@@ -24,23 +27,19 @@ class AuthorService{
 	//READ
 
 	async readAll(){
-		try{
-			const result = await prisma.author.findMany({
-				orderBy: {
-					StreamCount: "desc"
-				}
-			});
-
-			if(result.length > 0){
-				return result;
-			}else{
-				throw new Error("Sua pesquisa não gerou resultados.");
+		const result = await prisma.author.findMany({
+			orderBy: {
+				StreamCount: "desc"
 			}
-		}catch(error){
-			console.log(error);
+		});
+
+		if(result.length > 0){
+			return result;
+		}else{
+			throw new Error("Sua pesquisa não gerou resultados.");
 		}
-        
 	}
+        
 
 	async ReadByID(id: number){
 		try{
@@ -140,7 +139,9 @@ class AuthorService{
 
 	//delete
 	async deleteArtist(id: number ){
-		//try{
+		if(isNaN(id)){
+			throw new Error("O parâmetro deve ser um número.");
+		}
 		const author = await this.ReadByID(id);
 		console.log(author);
 
@@ -153,10 +154,6 @@ class AuthorService{
 		}else{
 			throw new Error("Não foi possível deletar o artista.");
 		}
-
-		//}//catch(error){
-		//console.log(error);
-		//} 
 	}
 
 
