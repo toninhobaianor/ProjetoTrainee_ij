@@ -94,7 +94,7 @@ describe("leitura de dados dos Usuários", () => {
 	});
 
     //readbyid
-    test("deve ler um id inexistente ==> gera erro", async () => {
+    test("deve ler um id inexistente ==>deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
 		await expect(Userservice.readById(user.id)).rejects.toThrow(
@@ -102,7 +102,7 @@ describe("leitura de dados dos Usuários", () => {
         );
 	});
 
-	test("deve ler um id válido ==> retornar a música correta com o id informado", async () => {
+	test("deve ler um id de um usuário válido ==> retornar um usuário com o id informado", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(user);
 
 		const result = await Userservice.readById(user.id);
@@ -110,7 +110,7 @@ describe("leitura de dados dos Usuários", () => {
 	});
 
     // readbyname
-    test("deve ler um nome inexistente ==> gera erro", async () => {
+    test("deve ler um nome de usuário inexistente ==>deve gerar um erro", async () => {
 		prismaMock.user.findMany.mockResolvedValue([]);
 
 		await expect(Userservice.readbyName(user.name)).rejects.toThrow(
@@ -118,7 +118,7 @@ describe("leitura de dados dos Usuários", () => {
         );
 	});
 
-	test("deve ler um nome válido ==> retornar a música correta com o nome informado", async () => {
+	test("deve ler um nome de um usuário válido ==> retornar os usuários com o nome informado", async () => {
 		prismaMock.user.findMany.mockResolvedValue([user]);
 
 		const result = await Userservice.readbyName(user.name);
@@ -126,7 +126,7 @@ describe("leitura de dados dos Usuários", () => {
 	});
 
     //readbyemail
-    test("deve ler um nome inexistente ==> gera erro", async () => {
+    test("deve ler um email de usuário inexistente ==>deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
 		await expect(Userservice.readbyEmail(user.email)).rejects.toThrow(
@@ -134,7 +134,7 @@ describe("leitura de dados dos Usuários", () => {
         );
 	});
 
-	test("deve ler um nome válido ==> retornar a música correta com o nome informado", async () => {
+	test("deve ler um email de usuário válido ==> retornar o usuário com o email correspondente", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(user);
 
 		const result = await Userservice.readbyEmail(user.email);
