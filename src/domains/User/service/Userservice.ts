@@ -200,42 +200,36 @@ class UserService{
 
 	async deleteUser(wantedEmail: string){
 		const condicao = await this.readbyEmail(wantedEmail);
-		try{
-			if(condicao){
-				const result = await prisma.user.delete({
-					where: {
-						email: wantedEmail,
-					},
-				});
-				return result;
-			}
-			else{
-				throw new InvalidParamError("O email informado não existe.");
-			}
+		
+		if(condicao){
+			const result = await prisma.user.delete({
+				where: {
+					email: wantedEmail,
+				},
+			});
+			return result;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new InvalidParamError("O email informado não existe.");
 		}
+		
 	}
 
 	async deleteById(wantedId: number){
 		const user = await this.readById(wantedId);
-		try{
-			if(user != null){
-				const result = await prisma.user.delete({
-					where: {
-						email: user.email,
-					},
-				});
-				return result;
-			}
-			else{
-				throw new InvalidParamError("O id informado não existe.");
-			}
+		
+		if(user != null){
+			const result = await prisma.user.delete({
+				where: {
+					email: user.email,
+				},
+			});
+			return result;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new InvalidParamError("O id informado não existe.");
 		}
+		
 	}
 
 }

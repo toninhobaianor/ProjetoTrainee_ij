@@ -152,6 +152,7 @@ describe("Atualizandos os dados do Usuário", () => {
         photo:"imagem.png",
 	};
 
+	//ATUALIZANDO O NOME DO USUARIO
 	test("deve ler um usuário inexistente ==> deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
@@ -159,7 +160,18 @@ describe("Atualizandos os dados do Usuário", () => {
             new InvalidParamError("Não existe este email na nossa base de dados")
         );
 	});
+
+	test("deve atualizar o nome de um usuário ==> atualiza o nome do usuário", async () => {
+		prismaMock.user.findUnique.mockResolvedValue(user);
+
+		const updateuser = await Userservice.updateNameUser("andre", user);
+
+		const newuser = Userservice.readById(user.id);
+		await expect(newuser).resolves.not.toEqual(updateuser);
+
+	});
     
+	//ATUALIZANDO A SENHA DO USUARIO
     test("deve ler um usuário inexistente ==> deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
@@ -167,13 +179,34 @@ describe("Atualizandos os dados do Usuário", () => {
             new InvalidParamError("Não existe este email na nossa base de dados")
         );
 	});
+
+	test("deve atualizar a senha de um usuário ==> atualiza a senha do usuário", async () => {
+		prismaMock.user.findUnique.mockResolvedValue(user);
+
+		const updateuser = await Userservice.updatePasswordUser("123456", user);
+
+		const newuser =  Userservice.readById(user.id);
+		await expect(newuser).resolves.not.toEqual(updateuser);
+
+	});
     
+	//ATUALIZANDO O EMAIL DO USUARIO
     test("deve ler um usuário inexistente ==> deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
 		await expect(Userservice.updateEmailUser("andre@gmail.com", user)).rejects.toThrow(
             new InvalidParamError("Não existe este email na nossa base de dados")
         );
+	});
+
+	test("deve atualizar o email de um usuário ==> atualiza o email do usuário", async () => {
+		prismaMock.user.findUnique.mockResolvedValue(user);
+
+		const updateuser = await Userservice.updateEmailUser("andre@gmail.com", user);
+
+		const newuser = Userservice.readById(user.id);
+		await expect(newuser).resolves.not.toEqual(updateuser);
+
 	});
     
 });
@@ -188,7 +221,7 @@ describe("deletando os Usuários", () => {
         photo:"imagem.png",
 	};
 
-	
+	//DELETA UM USUARIO A PARTIR DO EMAIL
 	test("deve tentar deletar um usuário inexistente ==> deve gerar um erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
@@ -201,6 +234,22 @@ describe("deletando os Usuários", () => {
 		prismaMock.user.findUnique.mockResolvedValue(user);
 
 		await expect(Userservice.deleteUser(user.email)).resolves.toEqual(undefined);
+
+	});
+
+	//DELETA UM USUARIO APARTIR DO ID
+	test("deve tentar deletar um usuário inexistente ==> deve gerar um erro", async () => {
+		prismaMock.user.findUnique.mockResolvedValue(null);
+
+		await expect(Userservice.deleteById(0)).rejects.toThrow(
+			new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + user.id + "' não está na nossa base de dados.")
+        );
+	});
+
+	test("deve deletar um usuário por id ==> deleta o usuário com o dado informado", async () => {
+		prismaMock.user.findUnique.mockResolvedValue(user);
+
+		await expect(Userservice.deleteById(user.id)).resolves.toEqual(undefined);
 
 	});
 });
