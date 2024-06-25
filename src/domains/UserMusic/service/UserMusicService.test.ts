@@ -30,13 +30,17 @@ describe("createUserMusic", () => {
 	test("deve receber um parâmetro inválido (userId) ==> gera erro", async () => {
 		const invalidId = "invalid_id";
 
-		await expect(UserMusicService.createUserMusic(1, invalidId as unknown as number)).rejects.toThrow(new InvalidParamError("O parâmetro 'userId' deve ser um número válido."));
+		await expect(UserMusicService.createUserMusic(1, invalidId as unknown as number)).rejects.toThrow(
+			new InvalidParamError("O parâmetro 'userId' deve ser um número válido.")
+		);
 	});
 
 	test("deve ler um id de usuário inexistente e tentar criar uma relação ==> gera erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
-		await expect(UserMusicService.createUserMusic(2,user.id)).rejects.toThrow(new QueryError("Usuário com ID '" + user.id + "' não encontrado."));
+		await expect(UserMusicService.createUserMusic(2,user.id)).rejects.toThrow(
+			new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + user.id + "' não está na nossa base de dados.")
+		);
 	});
 
 	test("deve ler musicId e userId válidos ==> cria relação entre user e music", async () => {
@@ -66,7 +70,9 @@ describe("readUserMusic", () => {
 	test("deve ler um id de usuário inexistente e tentar ler a relação ==> gera erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
-		await expect(UserMusicService.readUserMusics(user.id)).rejects.toThrow(new QueryError("Usuário com ID '" + user.id + "' não encontrado."));
+		await expect(UserMusicService.readUserMusics(user.id)).rejects.toThrow(
+			new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + user.id + "' não está na nossa base de dados.")
+		);
 	});
 
 	test("deve ler userId válido ==> retorna relação entre user e music com id informado", async () => {
@@ -109,7 +115,9 @@ describe("deleteUserMusic", () => {
 	test("deve ler um id de usuário inexistente e tentar deletar a relação ==> gera erro", async () => {
 		prismaMock.user.findUnique.mockResolvedValue(null);
 
-		await expect(UserMusicService.deleteUserMusic(2,user.id)).rejects.toThrow(new QueryError("Usuário com ID '" + user.id + "' não encontrado."));
+		await expect(UserMusicService.deleteUserMusic(2,user.id)).rejects.toThrow(
+			new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + user.id + "' não está na nossa base de dados.")
+		);
 	});
 
 	test("deve ler userId válido ==> deleta relação entre user e music com id informado", async () => {
