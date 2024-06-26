@@ -5,7 +5,7 @@ import { checkRole, login, logout, notLoggedIn, verifyJWT } from "../../../middl
 import Userservice from "../service/Userservice";
 
 const router = Router();
-router.post("/users/create",async (req: Request, res: Response, next: NextFunction) =>{
+router.post("/create",async (req: Request, res: Response, next: NextFunction) =>{
 	try {
 		const body: User = req.body;
 		if (!body || !body.senha || !body.email) {
@@ -22,42 +22,47 @@ router.post("/login",notLoggedIn,login);
 
 router.post("/logout",verifyJWT,logout);
 
-/*
 router.get("/account", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		//entender melhor sobre o res.cookie
-		
-		const user = Userservice.readById(req.user.id);
+		//console.log(req.user);
+		res.json(req.user);
+	} catch (error) {
+		next(error);
+	}
+});
+
+
+router.put("/account/password", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const cripitografia = await Userservice.encryptPassaword(req.body.senha);
+		const user = Userservice.updatePasswordUser(cripitografia,req.user);
+		res.json(user);
 	} catch (error) {
 		next(error);
 	}
 
 });
 
-router.put("/account/password", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
+router.put("/account/update", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		//entender melhor sobre o res.cookie
-		const body: string = req.body;
-		const token = req.cookies.access_token;
-		console.log(token);
-		const cripitografia = await Userservice.encryptPassaword(body);
-		//const user = Userservice.updatePasswordUser(cripitografia,);
+		const user = Userservice.updateNameUser(req.body.name,req.user);
+		res.json(user);
 	} catch (error) {
 		next(error);
 	}
-
 });
 
 router.delete("/account/delete", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		//entender melhor sobre o res.cookie
+		const user = Userservice.deleteUser(req.user.email);
+		logout
+		res.json(user);
 	} catch (error) {
 		next(error);
 	}
 
 });
 
-*/
 
 //Create
 router.post("/admin/create", verifyJWT ,checkRole(["admin"]), async (req: Request, res: Response, next: NextFunction) => {
