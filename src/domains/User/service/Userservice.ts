@@ -16,32 +16,27 @@ class UserService{
 			throw new InvalidParamError("O campo 'email' é obrigatório.");
 		}
 		
-		try{
-			const condicao = await prisma.user.findUnique({
-				where:{
-					email: body.email
+		const condicao = await prisma.user.findUnique({
+			where:{
+				email: body.email
+			}
+		});
+			
+		if(condicao == null){
+			const cripitografia = await this.encryptPassaword(body.senha);
+			const user = await prisma.user.create({
+				data: {
+					name: body.name,
+					email: body.email,
+					photo: body.photo,
+					senha: cripitografia,
+					tem_privilegio: body.tem_privilegio
 				}
 			});
-			
-			if(condicao == null){
-				const cripitografia = await this.encryptPassaword(body.senha);
-				const user = await prisma.user.create({
-					data: {
-						name: body.name,
-						email: body.email,
-						photo: body.photo,
-						senha: cripitografia,
-						tem_privilegio: body.tem_privilegio
-					}
-				});
-				return user;
-			}
-			else{
-				throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
-			}
+			return user;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
 		}
 	}
 	async createCont(body: User){
@@ -49,32 +44,27 @@ class UserService{
 			throw new InvalidParamError("O campo 'email' é obrigatório.");
 		}
 		
-		try{
-			const condicao = await prisma.user.findUnique({
-				where:{
-					email: body.email
+		const condicao = await prisma.user.findUnique({
+			where:{
+				email: body.email
+			}
+		});
+			
+		if(condicao == null){
+			const cripitografia = await this.encryptPassaword(body.senha);
+			const user = await prisma.user.create({
+				data: {
+					name: body.name,
+					email: body.email,
+					photo: body.photo,
+					senha: cripitografia,
+					tem_privilegio: "user"
 				}
 			});
-			
-			if(condicao == null){
-				const cripitografia = await this.encryptPassaword(body.senha);
-				const user = await prisma.user.create({
-					data: {
-						name: body.name,
-						email: body.email,
-						photo: body.photo,
-						senha: cripitografia,
-						tem_privilegio: "user"
-					}
-				});
-				return user;
-			}
-			else{
-				throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
-			}
+			return user;
 		}
-		catch(error){
-			console.log(error);
+		else{
+			throw new QueryError("Não foi possivel realizar o cadastro pois o email já existe.");
 		}
 	}
 
