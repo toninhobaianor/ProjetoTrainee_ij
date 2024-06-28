@@ -1,5 +1,4 @@
 import { prismaMock } from "../../../../config/singleton";
-import { QueryError } from "../../../../errors/QueryError";
 import { InvalidParamError } from "../../../../errors/InvalidParamError";
 import UserMusicService from "./UserMusicService";
 

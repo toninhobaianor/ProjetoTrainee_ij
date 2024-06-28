@@ -18,8 +18,15 @@ describe("createMusic", () => {
 		genre: "Sertanejo",
 		album: "As Melhores",
 	};
+	const autor = {
+		id: 1,
+		Author: "Ana Castela",
+		StreamCount: 10000000,
+		photo: null
+	};
 
 	test("deve receber uma música válida ==> cria uma música", async () => {
+		prismaMock.author.findUnique.mockResolvedValue(autor);
 		prismaMock.music.create.mockResolvedValue(music);
 
 		await expect(MusicService.createMusic(music)).resolves.toEqual({
@@ -29,6 +36,10 @@ describe("createMusic", () => {
 			album: "As Melhores",
 			authorId: 3
 		});
+	});
+
+	test("deve falhar ao criar música sem authorId", async () => {
+		await expect(MusicService.createMusic(invalidMusic as unknown as Music)).rejects.toThrow("Parâmetros inválidos fornecidos.");
 	});
 
 	test("deve receber uma musica com parâmetro inválido ==> gera erro", async () => {
@@ -225,6 +236,12 @@ describe("updateMusic", () => {
 		album: "As Melhores",
 		authorId: 3
 	};
+	const autor = {
+		id: 1,
+		Author: "Ana Castela",
+		StreamCount: 10000000,
+		photo: null
+	};
 
 	test("deve ler um parâmetro inválido (id) ==> gera erro", async () => {
 		prismaMock.music.findUnique.mockResolvedValue(null);
@@ -240,6 +257,7 @@ describe("updateMusic", () => {
 	});
 
 	test("deve atualizar uma música por id ==> atualiza a música com o id informado", async () => {
+		prismaMock.author.findUnique.mockResolvedValue(autor);
 		prismaMock.music.findUnique.mockResolvedValue(music);
 
 		await MusicService.updateMusic(99, music);
