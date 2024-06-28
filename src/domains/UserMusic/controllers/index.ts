@@ -1,17 +1,17 @@
 import { Router, Request, Response, NextFunction } from "express";
 import UserMusicService from "../service/UserMusicService";
 import { statusCodes } from "../../../../utils/constants/statusCodes";
-import { verifyJWT, checkRole } from "../../../middlewares/auth";
+import { verifyJWT } from "../../../middlewares/auth";
 
 const router = Router();
 
-router.post("/listen/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/listen/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const { id }: { id: number } = req.body;
+		const id = Number(req.params.id);
 		if (isNaN(id)) {
 			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID de música inválido fornecido." });
 		}
-		const userId = Number(req.params.id);
+		const userId = Number(req.user.id);
 		if (isNaN(userId)) {
 			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID de usuário inválido fornecido." });
 		}
@@ -26,13 +26,13 @@ router.post("/listen/:id", verifyJWT, checkRole(["admin", "user"]), async (req: 
 	}
 });
 
-router.get("/musics/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try{
-		const musicId = Number(req.params.id);
-		if (isNaN(musicId)) {
-			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID inválido fornecido." });
+		const userId = req.user.id;
+		if (isNaN(userId)) {
+			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID de usuário inválido fornecido." });
 		}
-		const usermusic = await UserMusicService.readUserMusics(musicId);
+		const usermusic = await UserMusicService.readUserMusics(userId);
 		if (usermusic) {
 			res.status(statusCodes.SUCCESS).json(usermusic);
 		} else {
@@ -43,13 +43,13 @@ router.get("/musics/:id", verifyJWT, checkRole(["admin", "user"]), async (req: R
 	}
 });
 
-router.delete("/unlisten/:id", verifyJWT, checkRole(["admin", "user"]), async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/unlisten/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const { id }: { id: number } = req.body;
+		const id = Number(req.params.id);
 		if (isNaN(id)) {
 			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID de música inválido fornecido." });
 		}
-		const userId = Number(req.params.id);
+		const userId = Number(req.user.id);
 		if (isNaN(userId)) {
 			return res.status(statusCodes.BAD_REQUEST).json({ error: "ID de usuário inválido fornecido." });
 		}

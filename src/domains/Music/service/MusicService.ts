@@ -12,6 +12,15 @@ class MusicService{
 		if (!body || !body.name || isNaN(body.authorId) || !body.authorId){
 			throw new InvalidParamError("Parâmetros inválidos fornecidos.");
 		}
+
+		const authorExists = await prisma.author.findUnique({
+			where: { id: body.authorId },
+		});
+		
+		if (!authorExists) {
+			throw new QueryError("Artista não encontrado.");
+		}
+
 		const result = await prisma.music.create({
 			data:{
 				album: body.album,
@@ -152,27 +161,33 @@ class MusicService{
 		if(isNaN(id)){
 			throw new InvalidParamError("O parâmetro deve ser um número.");
 		}
+
 		const music = await this.readById(id);
-
-		if(music){
-			const newMusic = await prisma.music.update({
-				data:{
-					album: body.album,
-					genre: body.genre,
-					name: body.name,
-					authorId: body.authorId,
-				}, 
-				where:{
-					id
-				}
-			});
-
-			return newMusic;
-		}else{
+		if (!music) {
 			throw new QueryError("Música não encontrada.");
 		}
 
-		
+		const authorExists = await prisma.author.findUnique({
+			where: { id: body.authorId },
+		});
+    
+		if (!authorExists) {
+			throw new QueryError("Artista não encontrado.");
+		}
+
+		const newMusic = await prisma.music.update({
+			data: {
+				album: body.album,
+				genre: body.genre,
+				name: body.name,
+				authorId: body.authorId,
+			}, 
+			where: {
+				id
+			}
+		});
+	
+		return newMusic;
 	}
 
 	// DELETE
