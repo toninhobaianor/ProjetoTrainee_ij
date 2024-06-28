@@ -8,7 +8,6 @@ services:
     build:
       context: .
       dockerfile: api.dockerfile
-    image: ${IMAGE_API}
     
     ports:
       - "${PORT_API}:${PORT_API}"
@@ -18,11 +17,12 @@ services:
 
     volumes:
       - .:/api
+      - .:/api/node_modules
 
     depends_on: 
       - mysql
 
-    command: npx prisma migrate deploy && npm start
+    command: sh - c "npx prisma migrate deploy && npm start"
     
   mysql:
     container_name: ${NAME_CONTAINER_DB}
