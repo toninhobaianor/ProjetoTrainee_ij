@@ -150,17 +150,17 @@ class UserService{
 	}
 
 	async readById(wantedId: number){
-			const result = await prisma.user.findUnique({
-				where:{
-					id: Number(wantedId),
-				}
-			});
-
-			if(result){
-				return result;
-			}else{
-				throw new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
+		const result = await prisma.user.findUnique({
+			where:{
+				id: Number(wantedId),
 			}
+		});
+
+		if(result){
+			return result;
+		}else{
+			throw new InvalidParamError("Sua pesquisa não gerou resultados. O ID '" + wantedId + "' não está na nossa base de dados.");
+		}
 	}
 
 	async readbyName(wantedName:string){

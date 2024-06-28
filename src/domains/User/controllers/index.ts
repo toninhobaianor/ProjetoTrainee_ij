@@ -31,10 +31,14 @@ router.get("/account", verifyJWT , async (req: Request, res: Response, next: Nex
 });
 
 
-router.put("/account/password", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
+router.put("/account/updatePassword", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = Userservice.updatePasswordUser(req.body.senha,req.user);
-		res.json(user);
+		const user = await Userservice.updatePasswordUser(req.body.senha,req.user);
+		if(user){
+			res.status(statusCodes.SUCCESS).json(user);
+		}else{
+			res.status(statusCodes.NOT_FOUND).send();
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -43,8 +47,25 @@ router.put("/account/password", verifyJWT , async (req: Request, res: Response, 
 
 router.put("/account/updateName", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = Userservice.updateNameUser(req.body.name,req.user);
-		res.json(user);
+		const user = await Userservice.updateNameUser(req.body.name,req.user);
+		if(user){
+			res.status(statusCodes.SUCCESS).json(user);
+		}else{
+			res.status(statusCodes.NOT_FOUND).send();
+		}
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.put("/account/updateEmail", verifyJWT , async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const user = await Userservice.updateEmailUser(req.body.email,req.user);
+		if(user){
+			res.status(statusCodes.SUCCESS).json(user);
+		}else{
+			res.status(statusCodes.NOT_FOUND).send();
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -52,7 +73,7 @@ router.put("/account/updateName", verifyJWT , async (req: Request, res: Response
 
 router.delete("/account/delete", verifyJWT ,logout ,async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = Userservice.deleteUser(req.user.email);
+		const user = await Userservice.deleteUser(req.user.email);
 		if(user){
 			res.status(statusCodes.SUCCESS).json(user);
 		}else{
@@ -66,7 +87,7 @@ router.delete("/account/delete", verifyJWT ,logout ,async (req: Request, res: Re
 
 //FUNCIONALIDES DO ADMIN
 //criar outro admin ou usuario sendo um admin
-router.post("/admin/create", verifyJWT ,checkRole(["admin"]), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/admin/create", verifyJWT , checkRole("admin"), async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: User = req.body;
 		if (!body || !body.senha || !body.email) {
@@ -80,7 +101,7 @@ router.post("/admin/create", verifyJWT ,checkRole(["admin"]), async (req: Reques
 });
 
 //Read all
-router.get("/admin/",verifyJWT ,checkRole(["admin"]), async (req:Request, res:Response, next:NextFunction) => {
+router.get("/admin/",verifyJWT ,checkRole("admin"), async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const users = await Userservice.readUser();
 		if(users.length > 0){
@@ -94,7 +115,7 @@ router.get("/admin/",verifyJWT ,checkRole(["admin"]), async (req:Request, res:Re
 });
 
 //read com id
-router.get("/admin/:id",verifyJWT,checkRole(["admin"]),async (req:Request, res:Response, next:NextFunction) => {
+router.get("/admin/id/:id",verifyJWT, checkRole("admin"), async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readById(Number(req.params.id));
 		if (user) {
@@ -108,13 +129,13 @@ router.get("/admin/:id",verifyJWT,checkRole(["admin"]),async (req:Request, res:R
 });
 
 //read name
-router.get("/admin/name/:name",verifyJWT,async (req:Request, res:Response, next:NextFunction) => {
+router.get("/admin/name/:name",verifyJWT, checkRole("admin"), async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyName(req.params.name);
 		if (user) {
 			res.status(statusCodes.SUCCESS).json(user);
 		} else {
-			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum usuario com este nome." });
+			res.status(statusCodes.NOT_FOUND).json();
 		}
 	} catch (error) {
 		next(error);
@@ -122,13 +143,13 @@ router.get("/admin/name/:name",verifyJWT,async (req:Request, res:Response, next:
 });
 
 //read email
-router.get("/admin/email/:email",verifyJWT,checkRole(["admin"]),async (req:Request, res:Response, next:NextFunction) => {
+router.get("/admin/email/:email",verifyJWT,checkRole("admin"),async (req:Request, res:Response, next:NextFunction) => {
 	try {
 		const user = await Userservice.readbyEmail(req.params.email);
 		if (user) {
 			res.status(statusCodes.SUCCESS).json(user);
 		} else {
-			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum usuario com este email." });
+			res.status(statusCodes.NOT_FOUND).json();
 		}
 	} catch (error) {
 		next(error);
@@ -136,7 +157,7 @@ router.get("/admin/email/:email",verifyJWT,checkRole(["admin"]),async (req:Reque
 });
 
 //um admin possa ver sua propria conta
-router.get("/admin", verifyJWT , checkRole(["admin"]),async (req: Request, res: Response, next: NextFunction) => {
+router.get("/admin/adminaccount", verifyJWT , checkRole("admin"),async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		res.json(req.user);
 	} catch (error) {
@@ -145,23 +166,37 @@ router.get("/admin", verifyJWT , checkRole(["admin"]),async (req: Request, res: 
 });
 
 // Update email
-router.put("/admin/updateEmail", verifyJWT,checkRole(["admin"]),async (req: Request, res: Response, next: NextFunction) => {
+router.put("/admin/updateEmail", verifyJWT,checkRole("admin"),async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const user = await Userservice.updateEmailUser(req.body.email,req.user);
 		if (user) {
 			res.status(statusCodes.SUCCESS).json(user);
 		} else {
-			res.status(statusCodes.NOT_FOUND).json({ error: "Nenhum usuario foi encontrado." });
+			res.status(statusCodes.NOT_FOUND).json();
 		}
 	} catch (error) {
 		next(error);
 	}
 });
 
-//upadte name
-router.put("/admin/updateName", verifyJWT ,checkRole(["admin"]), async (req: Request, res: Response, next: NextFunction) => {
+// Update senha
+router.put("/admin/updatePassword", verifyJWT,checkRole("admin"),async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = Userservice.updateNameUser(req.body.name,req.user);
+		const user = await Userservice.updatePasswordUser(req.body.senha,req.user);
+		if (user) {
+			res.status(statusCodes.SUCCESS).json(user);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json();
+		}
+	} catch (error) {
+		next(error);
+	}
+});
+
+//Update name
+router.put("/admin/updateName", verifyJWT ,checkRole("admin"), async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const user = await Userservice.updateNameUser(req.body.name,req.user);
 		if(user){
 			res.status(statusCodes.SUCCESS).json(user);
 		}else{
@@ -173,9 +208,9 @@ router.put("/admin/updateName", verifyJWT ,checkRole(["admin"]), async (req: Req
 });
 
 //deletar o proprio usuario admin
-router.delete("/admin/delete", verifyJWT ,logout , checkRole(["admin"]),async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/admin/delete", verifyJWT ,logout , checkRole("admin"), logout , async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = Userservice.deleteUser(req.user.email);
+		const user = await Userservice.deleteUser(req.user.email);
 		if(user){
 			res.status(statusCodes.SUCCESS).json(user);
 		}else{
@@ -189,11 +224,11 @@ router.delete("/admin/delete", verifyJWT ,logout , checkRole(["admin"]),async (r
 
 
 //Deletar outros usuarios sendo o admin
-router.delete("/admin/delete/:id",verifyJWT ,checkRole(["admin"]), async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/admin/delete/:id",verifyJWT ,checkRole("admin"),async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const user = await Userservice.deleteById(Number(req.params.id));
 		if (user != null) {
-			res.status(statusCodes.NOT_FOUND).json({ error: "Usuario não foi deletado." });
+			res.status(statusCodes.NOT_FOUND).json();
 		} else {
 			res.status(statusCodes.SUCCESS).json(user);
 		}
@@ -201,6 +236,9 @@ router.delete("/admin/delete/:id",verifyJWT ,checkRole(["admin"]), async (req: R
 		next(error);
 	}
 });
+
+//"email": "luisrobert@gmail.com",
+//  "senha": "123"
 
 
 export default router;

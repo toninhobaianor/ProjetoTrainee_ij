@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { Request, Response, NextFunction } from "express";
 import prisma from "../../config/prismaClient";
 import { PermissionError } from"../../errors/PermissionError";
@@ -121,23 +122,20 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
 
 
 
-export function checkRole(requiredRole: Array<string>) {
+export function checkRole(requiredRole: string) {
 	return async (req: Request, res: Response, next: NextFunction) => {
+	  // eslint-disable-next-line no-mixed-spaces-and-tabs
 	  try {
-		if(requiredRole.length == 1){
-		  const token = cookieExtractor(req);
-		  const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
-		  req.user = decoded.user;
-  
-		  if (req.user.tem_privilegio !== requiredRole[0]) {
-			throw new PermissionError("Você não tem permissão para acessar este recurso.");
-		  }
-		  next();
-		}
-		next();
-  
+		  	const token = cookieExtractor(req);
+		  	const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
+		  	req.user = decoded.user;
+		  	if (req.user.tem_privilegio !== requiredRole) {
+				throw new PermissionError("Você não tem permissão para acessar este recurso.");
+		  	}
+		  	next();
+			
 	  } catch (error) {
-		next(error);
+			next(error);
 	  }
 	};
-  }
+}
