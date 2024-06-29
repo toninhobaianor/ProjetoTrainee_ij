@@ -27,16 +27,37 @@ class AuthorService{
 	//READ
 
 	async readAll(){
+
+
+
 		const result = await prisma.author.findMany({
 			orderBy: {
-				StreamCount: "desc"
+				Author : "asc"
 			}
 		});
 
-		if(result.length > 0){
+		const sortedResult = result.sort((a, b) => a.Author.localeCompare(b.Author, undefined, { sensitivity: "base" })); 
+
+		if (sortedResult.length > 0) {
+			return sortedResult;
+		} else {
+			throw new Error("Sua pesquisa não gerou resultados.");
+		}
+	}
+
+
+	async ReadByName(name: string){
+		
+
+		const result = await prisma.author.findMany({
+			where: 
+			{
+				Author: name},
+		});
+		if(result){
 			return result;
 		}else{
-			throw new Error("Sua pesquisa não gerou resultados.");
+			throw new Error("Sua pesquisa não gerou resultados. O Artista: '" + name + "' não está na nossa base de dados.");
 		}
 	}
         
@@ -52,7 +73,7 @@ class AuthorService{
 		if(result){
 			return result;
 		}else{
-			throw new Error("Sua pesquisa não gerou resultados. O ID: '" + id + "' não está na nossa base de dados.");
+			throw new Error("Sua pesquisa não gerou resultados. O ID: '" + Number(id) + "' não está na nossa base de dados.");
 		}
 	}
 
@@ -106,28 +127,19 @@ class AuthorService{
 			throw new Error("Parâmetros inválidos fornecidos.");
 		}
 		
-		const author = await this.ReadByID(id);
+		await this.ReadByID(id);
 
+		const result = await prisma.author.update({
+			data:{
+				Author: body.Author,
+				photo: body.photo,
+				StreamCount: body.StreamCount,
 
-		if(author){
-			const result = await prisma.author.update({
-				data:{
-					Author: body.Author,
-					photo: body.photo,
-					StreamCount: body.StreamCount,
-
-				}, where:{
-					id: id,
-				},
-			});
-			return result;
-
-		}else{
-			throw new Error("Não foi possível Atualizar o artista.");
-		}
-
-
-
+			}, where:{
+				id: id,
+			},
+		});
+		return result;
 	}
 
 
@@ -140,15 +152,13 @@ class AuthorService{
 		const author = await this.ReadByID(id);
 		console.log(author);
 
-		if(author){
-			await prisma.author.delete({
-				where: {
-					id: Number(id),
-				},
-			});
-		}else{
-			throw new Error("Não foi possível deletar o artista.");
-		}
+		
+		const result = await prisma.author.delete({
+			where: {
+				id: Number(id),
+			},
+		});
+		return result;
 	}
 
 

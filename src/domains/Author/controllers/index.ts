@@ -29,6 +29,21 @@ router.get("/", verifyJWT ,async (req: Request, res: Response, next: NextFunctio
 });
 
 
+//GET (READ) by Name Author
+router.get("/:name", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const Author = await AuthorService.ReadByName(req.params.name);
+		if (Author) {
+			res.status(statusCodes.SUCCESS).json(Author);
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "Não foi encontrado nenhum Artista." });
+		}
+	} catch (error) {
+		next(error);
+	}
+});
+
+
 //GET (READ) by id
 router.get("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -74,7 +89,7 @@ router.get("/musicname/:name", async (req: Request, res: Response, next: NextFun
 });
 
 //Criando (POST) um Artista
-router.post("/", verifyJWT, checkRole(["admin"]) , async (req: Request, res: Response, next: NextFunction) => {
+router.post("/create", verifyJWT, checkRole("admin") , async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: Author = req.body;
 		if (!body || !body.Author) {
@@ -89,7 +104,7 @@ router.post("/", verifyJWT, checkRole(["admin"]) , async (req: Request, res: Res
 
 //Atualizando (PUT) um artista
 
-router.put("/update/:id", verifyJWT, checkRole(["admin"]) , async(req: Request, res: Response, next: NextFunction) => {
+router.put("/update/:id", verifyJWT, checkRole("admin") , async(req: Request, res: Response, next: NextFunction) => {
 	try {
 		const body: Author = req.body;
 		if (!body) {
@@ -108,13 +123,17 @@ router.put("/update/:id", verifyJWT, checkRole(["admin"]) , async(req: Request, 
 
 
 // delete (delete) artist 
-router.delete("/delete/:id", verifyJWT, checkRole(["admin"]) ,async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/:id", verifyJWT, checkRole("admin") ,async (req: Request, res: Response, next: NextFunction) => {
 	try {
+
+
+
 		const author = await AuthorService.deleteArtist(Number(req.params.id));
-		if (author != null) {
-			res.status(statusCodes.NOT_FOUND).json({ error: "O autor não foi deletado." });
-		} else {
+		if (author) {
 			res.status(statusCodes.SUCCESS).json(author);
+			
+		} else {
+			res.status(statusCodes.NOT_FOUND).json({ error: "O autor não foi deletado." });	
 		} 
 	} catch (error) {
 		next(error);
